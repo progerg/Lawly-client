@@ -1,0 +1,12 @@
+{
+  "@@locale": "ru",
+  "app_name": "Lawly",
+  "@app_name": {
+    "description": "Название приложения"
+  },
+  "next_text": "Дальше",
+  "start_text": "Начать",
+  "first_slogan": "Ваш надежный правовой помощник",
+  "second_slogan": "Поддержка в мире сложных законов",
+  "third_slogan": "Твой личный юрист теперь онлайн"
+}
