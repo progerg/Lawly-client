@@ -8,5 +8,22 @@
   "start_text": "Начать",
   "first_slogan": "Ваш надежный правовой помощник",
   "second_slogan": "Поддержка в мире сложных законов",
-  "third_slogan": "Твой личный юрист теперь онлайн"
+  "third_slogan": "Твой личный юрист теперь онлайн",
+  "auth_text_for_documents": "Чтобы добавить свои документы войдите или зарегистрируйтесь",
+  "auth_text_for_chat": "Чтобы начать чат с ИИ-консультантом войдите или зарегистрируйтесь",
+  "auth_text_for_profile": "Чтобы просмотреть свой профиль войдите или зарегистрируйтесь",
+  "template_app_bar_title": "Шаблоны",
+  "document_app_bar_title": "Документы",
+  "chat_app_bar_title": "Чат",
+  "profile_app_bar_title": "Профиль",
+  "enter": "Войти",
+  "registration": "Зарегистрироваться",
+  "auth_welcome": "С возвращением!",
+  "reg_welcome": "Добро пожаловать!",
+  "mail": "Почта",
+  "password": "Пароль",
+  "name": "Имя",
+  "mail_claim": "Введите почту",
+  "name_claim": "Введите имя",
+  "password_claim": "Введите пароль"
 }

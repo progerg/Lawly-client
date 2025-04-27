@@ -10,6 +10,7 @@ class LawlyCustomButton extends StatelessWidget {
   final Color colorText;
   final String iconPath;
   final EdgeInsetsGeometry padding;
+  final Color shadowColor;
 
   const LawlyCustomButton({
     super.key,
@@ -17,6 +18,7 @@ class LawlyCustomButton extends StatelessWidget {
     required this.text,
     this.colorButton = darkBlue,
     this.colorText = white,
+    this.shadowColor = shadow,
     required this.iconPath,
     required this.padding,
   });
@@ -27,31 +29,39 @@ class LawlyCustomButton extends StatelessWidget {
       padding: padding,
       child: GestureDetector(
         onTap: onPressed,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: ColoredBox(
+        child: Container(
+          decoration: BoxDecoration(
             color: colorButton,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-                horizontal: 15,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: shadowColor,
+                spreadRadius: 1,
+                blurRadius: 20,
+                offset: const Offset(0, 2),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    text,
-                    style: textBold20DarkBlueW700.copyWith(color: colorText),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 15,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  text,
+                  style: textBold20DarkBlueW700.copyWith(color: colorText),
+                ),
+                CircleAvatar(
+                  backgroundColor: white,
+                  radius: 19,
+                  child: SvgPicture.asset(
+                    iconPath,
                   ),
-                  CircleAvatar(
-                    backgroundColor: white,
-                    radius: 19,
-                    child: SvgPicture.asset(
-                      iconPath,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
