@@ -3,11 +3,20 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:lawly/api/data_sources/local/init_local_data_source.dart';
+import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
+import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
+import 'package:lawly/api/data_sources/remote/auth_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/documents_remote_data_source.dart';
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
+import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/domain/entities/auth_interceptor.dart';
 import 'package:lawly/features/auth/repository/auth_repository.dart';
 import 'package:lawly/features/auth/service/auth_service.dart';
+import 'package:lawly/features/auth/service/save_user_service.dart';
+import 'package:lawly/features/documents/repository/documents_repository.dart';
+import 'package:lawly/features/documents/service/documents_service.dart';
 import 'package:lawly/features/init/repository/i_init_reposioty.dart';
 import 'package:lawly/features/init/repository/init_repository.dart';
 import 'package:lawly/features/init/service/init_service.dart';
@@ -38,6 +47,22 @@ abstract class IAppScope {
   AuthService get authService;
 
   NavBarObserver get navBarObserver;
+
+  ScaffoldMessengerWrapper get scaffoldMessengerWrapper;
+
+  TokenLocalDataSource get tokenLocalDataSource;
+
+  AuthRemoteDataSource get authRemoteDataSource;
+
+  SaveUserLocalDataSource get saveUserLocalDataSource;
+
+  SaveUserService get saveUserService;
+
+  DocumentsRemoteDataSource get documentsRemoteDataSource;
+
+  DocumentsRepository get documentsRepository;
+
+  DocumentsService get documentsService;
 
   void dispose();
 
@@ -79,6 +104,30 @@ class AppScope implements IAppScope {
   late final NavBarObserver navBarObserver;
 
   @override
+  late final ScaffoldMessengerWrapper scaffoldMessengerWrapper;
+
+  @override
+  late final TokenLocalDataSource tokenLocalDataSource;
+
+  @override
+  late final AuthRemoteDataSource authRemoteDataSource;
+
+  @override
+  late final SaveUserLocalDataSource saveUserLocalDataSource;
+
+  @override
+  late final SaveUserService saveUserService;
+
+  @override
+  late final DocumentsRemoteDataSource documentsRemoteDataSource;
+
+  @override
+  late final DocumentsRepository documentsRepository;
+
+  @override
+  late final DocumentsService documentsService;
+
+  @override
   void dispose() {}
 
   @override
@@ -87,19 +136,13 @@ class AppScope implements IAppScope {
 
     dio = _initDio();
 
+    scaffoldMessengerWrapper = ScaffoldMessengerWrapper();
+
     initLocalDataSource = InitLocalDataSource(prefs);
     initRepository = InitRepository(initLocalDataSource);
     initService = InitService(initRepository);
 
-    navBarObserver = NavBarObserver();
-
     authBloc = AuthBloc();
-
-    authRepository = AuthRepository();
-
-    authService = AuthService(
-      authRepository: authRepository,
-    );
 
     authGuard = AuthGuard(authBloc: authBloc);
 
@@ -107,10 +150,47 @@ class AppScope implements IAppScope {
       initService: initService,
       authGuard: authGuard,
     );
+
+    saveUserLocalDataSource = SaveUserLocalDataSource(prefs: prefs);
+    saveUserService = SaveUserService(
+      saveUserLocalDataSource: saveUserLocalDataSource,
+    );
+
+    tokenLocalDataSource = TokenLocalDataSource(prefs: prefs);
+    authRemoteDataSource = AuthRemoteDataSource(dio);
+
+    dio.interceptors.add(
+      AuthInterceptor(
+        dio: dio,
+        authRemoteDataSource: authRemoteDataSource,
+        tokenLocalDataSource: tokenLocalDataSource,
+        authBloc: authBloc,
+        appRouter: router,
+      ),
+    );
+
+    documentsRemoteDataSource = DocumentsRemoteDataSource(dio);
+    documentsRepository = DocumentsRepository(
+      documentsRemoteDataSource: documentsRemoteDataSource,
+    );
+    documentsService = DocumentsService(
+      documentsRepository: documentsRepository,
+    );
+
+    navBarObserver = NavBarObserver();
+
+    authRepository = AuthRepository(
+      authRemoteDataSource: authRemoteDataSource,
+      tokenLocalDataSource: tokenLocalDataSource,
+    );
+
+    authService = AuthService(
+      authRepository: authRepository,
+    );
   }
 
   Dio _initDio() {
-    final env = Enviroment<AppConfig>.instance();
+    final env = Environment<AppConfig>.instance();
     const timeout = Duration(seconds: 30);
 
     final dio = Dio();

@@ -25,5 +25,9 @@
   "name": "Имя",
   "mail_claim": "Введите почту",
   "name_claim": "Введите имя",
-  "password_claim": "Введите пароль"
+  "password_claim": "Введите пароль",
+  "privacy_policy_first_part": "Я прочитал и согласен с ",
+  "privacy_policy_second_part": "Положениями и условиями",
+  "privacy_policy_third_part": " и ",
+  "privacy_policy_fourth_part": "Политикой конфиденциальности"
 }

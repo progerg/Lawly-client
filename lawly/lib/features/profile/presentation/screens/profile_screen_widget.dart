@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
+import 'package:lawly/assets/res/common_icons.dart';
 import 'package:lawly/assets/themes/text_style.dart';
+import 'package:lawly/features/common/widgets/lawly_custom_button.dart';
 import 'package:lawly/features/profile/presentation/screens/profile_screen_wm.dart';
 
 @RoutePage()
@@ -30,9 +32,12 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
             Text(
               'Profile Screen',
             ),
-            ElevatedButton(
+            const SizedBox(height: 50),
+            LawlyCustomButton(
               onPressed: wm.onLogOut,
-              child: const Text('Log Out'),
+              text: 'Log Out',
+              iconPath: CommonIcons.loginIcon,
+              padding: EdgeInsets.symmetric(horizontal: 20),
             ),
           ],
         ),

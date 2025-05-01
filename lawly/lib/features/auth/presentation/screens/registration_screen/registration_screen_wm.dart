@@ -1,9 +1,18 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:lawly/config/app_config.dart';
+import 'package:lawly/config/enviroment/enviroment.dart';
+import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
+import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_model.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_widget.dart';
+import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/guards/auth_guard.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
@@ -16,6 +25,10 @@ abstract class IRegistrationScreenWidgetModel implements IWidgetModel {
 
   void onCompleteRegistration();
 
+  void onAgreePrivacyPolicy(bool value);
+
+  void openPrivacyPolicy();
+
   void goBack();
 }
 
@@ -25,6 +38,9 @@ RegistrationScreenWidgetModel defaultRegistrationScreenWidgetModelFactory(
   final appScope = context.read<IAppScope>();
   final model = RegistrationScreenModel(
     navBarObserver: appScope.navBarObserver,
+    authService: appScope.authService,
+    authBloc: appScope.authBloc,
+    saveUserService: appScope.saveUserService,
   );
 
   return RegistrationScreenWidgetModel(
@@ -32,6 +48,7 @@ RegistrationScreenWidgetModel defaultRegistrationScreenWidgetModelFactory(
     authGuard: appScope.authGuard,
     appRouter: appScope.router,
     stackRouter: context.router,
+    scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
 
@@ -41,17 +58,21 @@ class RegistrationScreenWidgetModel
   final AuthGuard authGuard;
   final AppRouter appRouter;
   final StackRouter stackRouter;
+  final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
   final _nameTextController = TextEditingController();
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+
+  bool _isAgreePrivacyPolicy = false;
 
   RegistrationScreenWidgetModel(
     super.model, {
     required this.authGuard,
     required this.appRouter,
     required this.stackRouter,
-  });
+    required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
+  }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
   @override
   void initWidgetModel() {
@@ -67,6 +88,44 @@ class RegistrationScreenWidgetModel
   }
 
   @override
+  void onErrorHandle(Object error) {
+    super.onErrorHandle(error);
+
+    if (error is DioException) {
+      if (error.response?.statusCode == 409) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Пользователь с таким email уже существует',
+        );
+      } else if (error.response?.statusCode == 422) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Некорректный email',
+        );
+      } else if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.sendTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.connectionError ||
+          error.error is SocketException) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Проблемы с подключением к интернету',
+        );
+      } else {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Неизвестная ошибка',
+        );
+      }
+    }
+  }
+
+  @override
+  void onAgreePrivacyPolicy(bool value) {
+    _isAgreePrivacyPolicy = value;
+  }
+
+  @override
   TextEditingController get nameTextController => _nameTextController;
 
   @override
@@ -76,14 +135,62 @@ class RegistrationScreenWidgetModel
   TextEditingController get passwordTextController => _passwordTextController;
 
   @override
-  void onCompleteRegistration() {
-    appRouter.push(
-      switch (model.navBarObserver.currentNavBarElement.value) {
-        NavBarElement.document => DocumentsRouter(),
-        NavBarElement.template => TemplatesRouter(),
-        NavBarElement.chat => ChatRouter(),
-        NavBarElement.profile => ProfileRouter(),
-      },
+  Future<void> onCompleteRegistration() async {
+    try {
+      if (_nameTextController.text.isNotEmpty &&
+          _emailTextController.text.isNotEmpty &&
+          _passwordTextController.text.isNotEmpty) {
+        if (_isAgreePrivacyPolicy) {
+          final config = Environment<AppConfig>.instance().config;
+
+          final user = AuthorizedUserEntity(
+            name: _nameTextController.text,
+            email: _emailTextController.text,
+            password: _passwordTextController.text,
+            deviceId: config.deviceId,
+            deviceOs: config.deviceOs,
+            deviceName: config.deviceName,
+            agreeToTerms: true,
+          );
+
+          await model.register(entity: user);
+
+          await model.saveUserService.saveAuthUser(entity: user);
+
+          model.authBloc.add(
+            AuthEvent.loggedIn(authorizedUser: user),
+          );
+
+          appRouter.push(
+            switch (model.navBarObserver.currentNavBarElement.value) {
+              NavBarElement.document => DocumentsRouter(),
+              NavBarElement.template => TemplatesRouter(),
+              NavBarElement.chat => ChatRouter(),
+              NavBarElement.profile => ProfileRouter(),
+            },
+          );
+        } else {
+          _scaffoldMessengerWrapper.showSnackBar(
+            context,
+            'Примите условия политики конфиденциальности',
+          );
+        }
+      } else {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Заполните все поля',
+        );
+      }
+    } on DioException catch (e) {
+      log('Error: ${e.response?.statusCode.toString() ?? 'Unknown error'}');
+      onErrorHandle(e);
+    }
+  }
+
+  @override
+  Future<void> openPrivacyPolicy() async {
+    await stackRouter.root.push(
+      PrivacyPolicyRoute(),
     );
   }
 

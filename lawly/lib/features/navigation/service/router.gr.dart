@@ -290,6 +290,58 @@ class HomeRouter extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [PrivacyPolicyScreenWidget]
+class PrivacyPolicyRoute extends PageRouteInfo<PrivacyPolicyRouteArgs> {
+  PrivacyPolicyRoute({
+    Key? key,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultPrivacyPolicyScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         PrivacyPolicyRoute.name,
+         args: PrivacyPolicyRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
+
+  static const String name = 'PrivacyPolicyRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<PrivacyPolicyRouteArgs>(
+        orElse: () => const PrivacyPolicyRouteArgs(),
+      );
+      return PrivacyPolicyScreenWidget(
+        key: args.key,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class PrivacyPolicyRouteArgs {
+  const PrivacyPolicyRouteArgs({
+    this.key,
+    this.wmFactory = defaultPrivacyPolicyScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'PrivacyPolicyRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [ProfileRootScreen]
 class ProfileRouter extends PageRouteInfo<void> {
   const ProfileRouter({List<PageRouteInfo>? children})

@@ -1,10 +1,18 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:lawly/config/app_config.dart';
+import 'package:lawly/config/enviroment/enviroment.dart';
+import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen_model.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen_widget.dart';
+import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 import 'package:provider/provider.dart';
@@ -26,11 +34,13 @@ AuthScreenWidgetModel defaultAuthScreenWidgetModelFactory(
     authService: appScope.authService,
     authBloc: appScope.authBloc,
     navBarObserver: appScope.navBarObserver,
+    saveUserService: appScope.saveUserService,
   );
   return AuthScreenWidgetModel(
     model,
     appRouter: appScope.router,
     stackRouter: context.router,
+    scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
 
@@ -39,6 +49,7 @@ class AuthScreenWidgetModel
     implements IAuthScreenWidgetModel {
   final AppRouter appRouter;
   final StackRouter stackRouter;
+  final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -47,7 +58,8 @@ class AuthScreenWidgetModel
     super.model, {
     required this.appRouter,
     required this.stackRouter,
-  });
+    required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
+  }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
   @override
   void initWidgetModel() {
@@ -62,6 +74,39 @@ class AuthScreenWidgetModel
   }
 
   @override
+  void onErrorHandle(Object error) {
+    super.onErrorHandle(error);
+
+    if (error is DioException) {
+      if (error.response?.statusCode == 401) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Неверные учетные данные',
+        );
+      } else if (error.response?.statusCode == 422) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Некорректный email',
+        );
+      } else if (error.type == DioExceptionType.connectionTimeout ||
+          error.type == DioExceptionType.sendTimeout ||
+          error.type == DioExceptionType.receiveTimeout ||
+          error.type == DioExceptionType.connectionError ||
+          error.error is SocketException) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Проблемы с подключением к интернету',
+        );
+      } else {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Неизвестная ошибка',
+        );
+      }
+    }
+  }
+
+  @override
   TextEditingController get emailController => _emailController;
 
   @override
@@ -69,20 +114,51 @@ class AuthScreenWidgetModel
 
   @override
   Future<void> onCompleteAuth() async {
-    final user = await model.signIn();
+    try {
+      if (_emailController.text.isNotEmpty &&
+          _passwordController.text.isNotEmpty) {
+        final config = Environment<AppConfig>.instance().config;
 
-    model.authBloc.add(
-      AuthEvent.loggedIn(authorizedUser: user),
-    );
+        // TODO: потом добавить сохранение в SP после успешной регистрации
+        // final user = model.authBloc.state.authorizedUserOrNull?.copyWith(
+        //   email: _emailController.text,
+        //   password: _passwordController.text,
+        // );
 
-    appRouter.push(
-      switch (model.navBarObserver.currentNavBarElement.value) {
-        NavBarElement.document => DocumentsRouter(),
-        NavBarElement.template => TemplatesRouter(),
-        NavBarElement.chat => ChatRouter(),
-        NavBarElement.profile => ProfileRouter(),
-      },
-    );
+        final user = AuthorizedUserEntity(
+          email: _emailController.text,
+          password: _passwordController.text,
+          deviceId: config.deviceId,
+          deviceOs: config.deviceOs,
+          deviceName: config.deviceName,
+        );
+
+        await model.signIn(entity: user);
+
+        await model.saveUserService.saveAuthUser(entity: user);
+
+        model.authBloc.add(
+          AuthEvent.loggedIn(authorizedUser: user),
+        );
+
+        appRouter.push(
+          switch (model.navBarObserver.currentNavBarElement.value) {
+            NavBarElement.document => DocumentsRouter(),
+            NavBarElement.template => TemplatesRouter(),
+            NavBarElement.chat => ChatRouter(),
+            NavBarElement.profile => ProfileRouter(),
+          },
+        );
+      } else {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Заполните все поля',
+        );
+      }
+    } on DioException catch (e) {
+      log('Error: ${e.response?.statusCode.toString() ?? 'Unknown error'}');
+      onErrorHandle(e);
+    }
   }
 
   @override

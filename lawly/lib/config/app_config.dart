@@ -1,3 +1,5 @@
+import 'package:lawly/config/service/device_info_service.dart';
+
 class AppConfig {
   final String url;
 
@@ -18,4 +20,8 @@ class AppConfig {
         url: url ?? this.url,
         proxyUrl: proxyUrl ?? this.proxyUrl,
       );
+
+  String get deviceId => DeviceInfoService.instance.deviceId;
+  String get deviceOs => DeviceInfoService.instance.deviceOs;
+  String get deviceName => DeviceInfoService.instance.deviceName;
 }

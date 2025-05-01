@@ -6,5 +6,12 @@ class AuthService {
   AuthService({required IAuthRepository authRepository})
       : _authRepository = authRepository;
 
-  Future<AuthorizedUserEntity> signIn() => _authRepository.signIn();
+  Future<void> signIn({required AuthorizedUserEntity entity}) =>
+      _authRepository.signIn(entity: entity);
+
+  Future<void> register({required AuthorizedUserEntity entity}) =>
+      _authRepository.register(entity: entity);
+
+  Future<void> logout({required String deviceId}) =>
+      _authRepository.logout(deviceId: deviceId);
 }

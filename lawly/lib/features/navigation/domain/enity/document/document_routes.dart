@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:lawly/features/navigation/domain/enity/app_route_paths.dart';
 import 'package:lawly/features/navigation/domain/enity/auth/auth_routes.dart';
+import 'package:lawly/features/navigation/domain/enity/document/document_route_paths.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 
 AutoRoute createDocumentRouter(List<AutoRouteGuard> guards) => AutoRoute(
@@ -16,3 +17,8 @@ AutoRoute createDocumentRouter(List<AutoRouteGuard> guards) => AutoRoute(
         ),
       ],
     );
+
+final privacyPolicyRoute = AutoRoute(
+  page: PrivacyPolicyRoute.page,
+  path: DocumentRoutePaths.privacyPolicy,
+);
