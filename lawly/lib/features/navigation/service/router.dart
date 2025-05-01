@@ -6,6 +6,8 @@ import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen
 import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen_wm.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_selection_screen/auth_selection_screen_widget.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_selection_screen/auth_selection_screen_wm.dart';
+import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_widget.dart';
+import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_wm.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_widget.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_wm.dart';
 import 'package:lawly/features/chat/presentation/chat_root_screen.dart';
@@ -56,6 +58,7 @@ class AppRouter extends RootStackRouter {
             ),
             authRoute.copyWith(fullscreenDialog: true),
             registrationRoute.copyWith(fullscreenDialog: true),
+            privacyPolicyRoute.copyWith(fullscreenDialog: true),
             CustomRoute(
               initial: !_initService.isFirstLaunch,
               transitionsBuilder: TransitionsBuilders.fadeIn,

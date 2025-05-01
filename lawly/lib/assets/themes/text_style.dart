@@ -1,6 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:lawly/assets/colors/colors.dart';
 
+const textBold12DarkBlueW400 = TextStyle(
+  fontSize: 12,
+  fontWeight: FontWeight.w400,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
 const textBold24DarkBlueW600 = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.w600,

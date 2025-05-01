@@ -6,12 +6,14 @@ class AuthTextField extends StatelessWidget {
   final String textAbove;
   final TextEditingController controller;
   final String labelText;
+  final bool? isPassword;
 
   const AuthTextField({
     super.key,
     required this.textAbove,
     required this.controller,
     required this.labelText,
+    this.isPassword,
   });
 
   @override
@@ -22,7 +24,7 @@ class AuthTextField extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(
             left: 20,
-            bottom: 16,
+            bottom: 10,
           ),
           child: Text(
             textAbove,
@@ -44,6 +46,7 @@ class AuthTextField extends StatelessWidget {
           ),
           child: TextField(
             controller: controller,
+            obscureText: isPassword ?? false,
             decoration: InputDecoration(
               hintText: labelText,
               hintStyle: textBold15DarkBlueAlpha50W700,

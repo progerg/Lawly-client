@@ -26,6 +26,12 @@ dependencies:
   equatable: ^2.0.7
   flutter_bloc: ^9.1.0
   freezed_annotation: ^3.0.0
+  json_annotation: ^4.9.0
+  json_serializable: ^6.9.5
+  retrofit: ^4.4.2
+  device_info_plus: ^11.4.0
+  union_state: ^0.0.3
+  flutter_markdown: ^0.7.7
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +41,7 @@ dev_dependencies:
   auto_route_generator: ^10.0.1
   build_runner: ^2.4.15
   freezed: ^3.0.6
+  retrofit_generator: ^9.1.9
 
 flutter:
   generate: true
@@ -72,5 +79,5 @@ flutter_native_splash:
   color: "#F2EDE7"
   android_12:
     # Показываем белый экран на системном сплеше android 12+ 
-    image: assets/images/logo500.png
+    image: assets/images/logo_2.png
     color: "#F2EDE7"

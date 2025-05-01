@@ -7,6 +7,7 @@ import 'package:lawly/assets/res/common_icons.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_selection_screen/auth_selection_screen_wm.dart';
 import 'package:lawly/features/common/widgets/lawly_custom_button.dart';
+import 'package:lawly/features/common/widgets/unfocus_gesture_detector.dart';
 import 'package:lawly/l10n/l10n.dart';
 
 @RoutePage()
@@ -28,10 +29,12 @@ class AuthSelectionScreenWidget
         elevation: 0,
         backgroundColor: milkyWhite,
       ),
-      body: _AuthSelectionForm(
-        authSelectionText: wm.authSelectionText,
-        onAuth: wm.onAuth,
-        onRegistration: wm.onRegistration,
+      body: UnfocusGestureDetector(
+        child: _AuthSelectionForm(
+          authSelectionText: wm.authSelectionText,
+          onAuth: wm.onAuth,
+          onRegistration: wm.onRegistration,
+        ),
       ),
     );
   }
@@ -54,53 +57,51 @@ class _AuthSelectionForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SvgPicture.asset(
-            CommonIcons.authLogo,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        SvgPicture.asset(
+          CommonIcons.authLogo,
+        ),
+        // Image.asset(
+        //   CommonRes.authLogo,
+        //   scale: mediaQuery.size.width / 50,
+        // ),
+        Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: mediaQuery.size.width * 0.1,
           ),
-          // Image.asset(
-          //   CommonRes.authLogo,
-          //   scale: mediaQuery.size.width / 50,
-          // ),
-          Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: mediaQuery.size.width * 0.1,
-            ),
-            child: Text(
-              authSelectionText,
-              style: textBold24DarkBlueW700,
-              textAlign: TextAlign.center,
-            ),
+          child: Text(
+            authSelectionText,
+            style: textBold24DarkBlueW700,
+            textAlign: TextAlign.center,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              LawlyCustomButton(
-                onPressed: onAuth,
-                text: context.l10n.enter,
-                iconPath: CommonIcons.loginIcon,
-                padding: EdgeInsets.symmetric(
-                  horizontal: mediaQuery.size.width * 0.1,
-                ),
-                colorButton: white,
-                colorText: darkBlue,
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            LawlyCustomButton(
+              onPressed: onAuth,
+              text: context.l10n.enter,
+              iconPath: CommonIcons.loginIcon,
+              padding: EdgeInsets.symmetric(
+                horizontal: mediaQuery.size.width * 0.1,
               ),
-              const SizedBox(height: 27),
-              LawlyCustomButton(
-                onPressed: onRegistration,
-                text: context.l10n.registration,
-                iconPath: CommonIcons.addIcon,
-                padding: EdgeInsets.symmetric(
-                  horizontal: mediaQuery.size.width * 0.1,
-                ),
+              colorButton: white,
+              colorText: darkBlue,
+            ),
+            const SizedBox(height: 27),
+            LawlyCustomButton(
+              onPressed: onRegistration,
+              text: context.l10n.registration,
+              iconPath: CommonIcons.addIcon,
+              padding: EdgeInsets.symmetric(
+                horizontal: mediaQuery.size.width * 0.1,
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

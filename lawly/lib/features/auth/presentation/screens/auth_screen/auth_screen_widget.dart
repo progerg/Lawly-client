@@ -29,10 +29,12 @@ class AuthScreenWidget extends ElementaryWidget<IAuthScreenWidgetModel> {
           onPressed: wm.goBack,
         ),
       ),
-      body: _AuthForm(
-        onAuth: wm.onCompleteAuth,
-        emailController: wm.emailController,
-        passwordController: wm.passwordController,
+      body: UnfocusGestureDetector(
+        child: _AuthForm(
+          onAuth: wm.onCompleteAuth,
+          emailController: wm.emailController,
+          passwordController: wm.passwordController,
+        ),
       ),
     );
   }
@@ -53,14 +55,19 @@ class _AuthForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    return UnfocusGestureDetector(
-      child: Center(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 50,
+          bottom: 50,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             SvgPicture.asset(
               CommonIcons.authLogo,
             ),
+            const SizedBox(height: 35),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: mediaQuery.size.width * 0.1,
@@ -71,6 +78,7 @@ class _AuthForm extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
             ),
+            const SizedBox(height: 60),
             Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: mediaQuery.size.width * 0.1,
@@ -82,15 +90,17 @@ class _AuthForm extends StatelessWidget {
                     controller: emailController,
                     labelText: context.l10n.mail_claim,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   AuthTextField(
                     textAbove: context.l10n.password,
+                    isPassword: true,
                     controller: passwordController,
                     labelText: context.l10n.password_claim,
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 60),
             LawlyCustomButton(
               onPressed: onAuth,
               text: context.l10n.enter,
