@@ -1,27 +1,26 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter/widgets.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 
-class LawlyCustomButton extends StatelessWidget {
+class SelectionButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String text;
   final Color colorButton;
   final Color colorText;
-  final String iconPath;
+  final double borderRadius;
   final EdgeInsetsGeometry padding;
-  final Color shadowColor;
+  final TextStyle textStyle;
   final int maxLines;
 
-  const LawlyCustomButton({
+  const SelectionButton({
     super.key,
     required this.onPressed,
     required this.text,
     this.colorButton = darkBlue,
     this.colorText = white,
-    this.shadowColor = shadow,
-    required this.iconPath,
+    this.borderRadius = 10,
     required this.padding,
+    this.textStyle = textBold16DarkBlueW600,
     this.maxLines = 1,
   });
 
@@ -32,17 +31,10 @@ class LawlyCustomButton extends StatelessWidget {
       child: GestureDetector(
         onTap: onPressed,
         child: Container(
+          height: 72,
           decoration: BoxDecoration(
             color: colorButton,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: shadowColor,
-                spreadRadius: 1,
-                blurRadius: 20,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(borderRadius),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(
@@ -50,21 +42,15 @@ class LawlyCustomButton extends StatelessWidget {
               horizontal: 15,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: Text(
                     text,
-                    style: textBold20DarkBlueW700.copyWith(color: colorText),
+                    style: textStyle.copyWith(
+                      color: colorText,
+                    ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: maxLines,
-                  ),
-                ),
-                CircleAvatar(
-                  backgroundColor: white,
-                  radius: 19,
-                  child: SvgPicture.asset(
-                    iconPath,
                   ),
                 ),
               ],

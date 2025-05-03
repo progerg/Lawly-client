@@ -5,6 +5,8 @@ import 'package:lawly/features/common/domain/entity/user_entity.dart';
 
 part 'authorized_user_model.g.dart';
 
+const bool _agreeToTerms = true;
+
 @JsonSerializable()
 class AuthorizedUserModel extends AuthorizedUserEntity {
   @JsonKey(name: 'device_id')
@@ -26,7 +28,7 @@ class AuthorizedUserModel extends AuthorizedUserEntity {
     required this.deviceOs,
     required this.deviceName,
     super.name,
-    this.agreeToTerms = true,
+    this.agreeToTerms = _agreeToTerms,
   }) : super(
           deviceId: deviceId,
           deviceOs: deviceOs,

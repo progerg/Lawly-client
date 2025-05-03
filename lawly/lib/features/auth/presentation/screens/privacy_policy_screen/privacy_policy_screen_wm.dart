@@ -86,6 +86,7 @@ class PrivacyPolicyScreenWidgetModel
       _privacyPolicyState.content(privacyPolicyData.content);
     } on Exception catch (e) {
       _privacyPolicyState.failure(e, previousData);
+      onErrorHandle(e);
     }
   }
 
