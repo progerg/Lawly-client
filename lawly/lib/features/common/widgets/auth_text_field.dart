@@ -2,19 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 
-class AuthTextField extends StatelessWidget {
+class AuthTextField extends StatefulWidget {
   final String textAbove;
   final TextEditingController controller;
   final String labelText;
-  final bool? isPassword;
+  final bool isPassword;
 
   const AuthTextField({
     super.key,
     required this.textAbove,
     required this.controller,
     required this.labelText,
-    this.isPassword,
+    this.isPassword = false,
   });
+
+  @override
+  State<AuthTextField> createState() => _AuthTextFieldState();
+}
+
+class _AuthTextFieldState extends State<AuthTextField> {
+  bool _isVisiblePassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +34,7 @@ class AuthTextField extends StatelessWidget {
             bottom: 10,
           ),
           child: Text(
-            textAbove,
+            widget.textAbove,
             style: textBold24DarkBlueW600,
           ),
         ),
@@ -45,10 +52,12 @@ class AuthTextField extends StatelessWidget {
             ],
           ),
           child: TextField(
-            controller: controller,
-            obscureText: isPassword ?? false,
+            textAlignVertical:
+                widget.isPassword ? TextAlignVertical.center : null,
+            controller: widget.controller,
+            obscureText: widget.isPassword ? !_isVisiblePassword : false,
             decoration: InputDecoration(
-              hintText: labelText,
+              hintText: widget.labelText,
               hintStyle: textBold15DarkBlueAlpha50W700,
               contentPadding: EdgeInsets.only(left: 20),
               border: InputBorder.none,
@@ -57,6 +66,19 @@ class AuthTextField extends StatelessWidget {
               errorBorder: InputBorder.none,
               disabledBorder: InputBorder.none,
               focusedErrorBorder: InputBorder.none,
+              suffixIcon: widget.isPassword
+                  ? IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _isVisiblePassword = !_isVisiblePassword;
+                        });
+                      },
+                      icon: Icon(
+                        _isVisiblePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ))
+                  : null,
             ),
             style: textBold15DarkBlueW700,
             cursorColor: darkBlue,

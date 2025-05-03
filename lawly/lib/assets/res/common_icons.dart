@@ -7,5 +7,7 @@ class CommonIcons {
 
   static const String loginIcon = '$_basePath/login.svg';
 
+  static const String logoutIcon = '$_basePath/logout.svg';
+
   static const String _basePath = 'assets/icons/common';
 }

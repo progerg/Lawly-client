@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
@@ -11,44 +10,29 @@ import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
-import 'package:lawly/features/navigation/domain/enity/profile/profile_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
-import 'package:lawly/features/profile/domain/entities/user_info_entity.dart';
-import 'package:lawly/features/profile/presentation/screens/profile_screen_model.dart';
-import 'package:lawly/features/profile/presentation/screens/profile_screen_widget.dart';
+import 'package:lawly/features/profile/presentation/screens/settings_screen/settings_screen_model.dart';
+import 'package:lawly/features/profile/presentation/screens/settings_screen/settings_screen_widget.dart';
 import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
-import 'package:union_state/union_state.dart';
 
-abstract class IProfileScreenWidgetModel implements IWidgetModel {
-  UnionStateNotifier<UserInfoEntity> get userInfoState;
-
+abstract class ISettingsScreenWidgetModel implements IWidgetModel {
   String get title;
 
-  String get username;
-
-  String get email;
-
-  void openPrivacyPolicy();
-
-  void onOpenSettings();
-
-  void onOpenSubs();
-
   void onLogout();
+
+  void goBack();
 }
 
-ProfileScreenWidgetModel defaultProfileScreenWidgetModelFactory(
+SettingsScreenWidgetModel defaultSettingsScreenWidgetModelFactory(
     BuildContext context) {
   final appScope = context.read<IAppScope>();
-  final model = ProfileScreenModel(
+  final model = SettingsScreenModel(
     authBloc: appScope.authBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
     authService: appScope.authService,
-    userInfoService: appScope.userInfoService,
-    saveUserService: appScope.saveUserService,
   );
-  return ProfileScreenWidgetModel(
+  return SettingsScreenWidgetModel(
     model,
     appRouter: appScope.router,
     stackRouter: context.router,
@@ -56,40 +40,19 @@ ProfileScreenWidgetModel defaultProfileScreenWidgetModelFactory(
   );
 }
 
-class ProfileScreenWidgetModel
-    extends WidgetModel<ProfileScreenWidget, ProfileScreenModel>
-    implements IProfileScreenWidgetModel {
+class SettingsScreenWidgetModel
+    extends WidgetModel<SettingsScreenWidget, SettingsScreenModel>
+    implements ISettingsScreenWidgetModel {
   final AppRouter appRouter;
   final StackRouter stackRouter;
   final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
-  final _userInfoState = UnionStateNotifier<UserInfoEntity>.loading();
-
-  @override
-  String get title => context.l10n.profile_app_bar_title;
-
-  @override
-  String get username =>
-      model.saveUserService.getAuthUser()?.name ?? context.l10n.no_name;
-
-  @override
-  String get email => model.saveUserService.getAuthUser()?.email ?? '';
-
-  @override
-  UnionStateNotifier<UserInfoEntity> get userInfoState => _userInfoState;
-
-  ProfileScreenWidgetModel(
+  SettingsScreenWidgetModel(
     super.model, {
     required this.appRouter,
     required this.stackRouter,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
-
-  @override
-  void initWidgetModel() {
-    super.initWidgetModel();
-    unawaited(_loadUserInfo());
-  }
 
   @override
   void onErrorHandle(Object error) {
@@ -100,16 +63,6 @@ class ProfileScreenWidgetModel
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           'Неверные учетные данные',
-        );
-      } else if (error.response?.statusCode == 409) {
-        _scaffoldMessengerWrapper.showSnackBar(
-          context,
-          'У пользователя нет подписки',
-        );
-      } else if (error.response?.statusCode == 422) {
-        _scaffoldMessengerWrapper.showSnackBar(
-          context,
-          'Ошибка валидации данных',
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -130,18 +83,11 @@ class ProfileScreenWidgetModel
   }
 
   @override
-  Future<void> onOpenSettings() async {
-    await stackRouter.push(createSettingsRoute());
-  }
+  String get title => context.l10n.settings;
 
   @override
-  Future<void> openPrivacyPolicy() async {
-    await stackRouter.push(createPrivacyPolicyRoute());
-  }
-
-  @override
-  Future<void> onOpenSubs() async {
-    await stackRouter.push(createSubscribeRoute());
+  void goBack() {
+    stackRouter.pop();
   }
 
   @override
@@ -158,19 +104,6 @@ class ProfileScreenWidgetModel
       appRouter.push(const ProfileRouter());
     } on DioException catch (e) {
       log('Error: ${e.response?.statusCode.toString() ?? 'Unknown error'}');
-      onErrorHandle(e);
-    }
-  }
-
-  Future<void> _loadUserInfo() async {
-    final previousData = _userInfoState.value.data;
-    _userInfoState.loading(previousData);
-
-    try {
-      final userInfoData = await model.getUserInfo();
-      _userInfoState.content(userInfoData);
-    } on Exception catch (e) {
-      _userInfoState.failure(e, previousData);
       onErrorHandle(e);
     }
   }

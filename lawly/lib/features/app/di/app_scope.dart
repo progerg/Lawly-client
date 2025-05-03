@@ -7,6 +7,8 @@ import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
 import 'package:lawly/api/data_sources/remote/auth_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/documents_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/subscribe_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_remote_data_source.dart';
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
@@ -23,6 +25,10 @@ import 'package:lawly/features/init/service/init_service.dart';
 import 'package:lawly/features/navigation/service/guards/auth_guard.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
+import 'package:lawly/features/profile/repository/subscribe_repository.dart';
+import 'package:lawly/features/profile/repository/user_info_repository.dart';
+import 'package:lawly/features/profile/service/subscribe_service.dart';
+import 'package:lawly/features/profile/service/user_info_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class IAppScope {
@@ -63,6 +69,18 @@ abstract class IAppScope {
   DocumentsRepository get documentsRepository;
 
   DocumentsService get documentsService;
+
+  UserRemoteDataSource get userRemoteDataSource;
+
+  UserInfoRepository get userInfoRepository;
+
+  UserInfoService get userInfoService;
+
+  SubscribeRemoteDataSource get subscribeRemoteDataSource;
+
+  SubscribeRepository get subscribeRepository;
+
+  SubscribeService get subscribeService;
 
   void dispose();
 
@@ -128,6 +146,24 @@ class AppScope implements IAppScope {
   late final DocumentsService documentsService;
 
   @override
+  late final UserRemoteDataSource userRemoteDataSource;
+
+  @override
+  late final UserInfoRepository userInfoRepository;
+
+  @override
+  late final UserInfoService userInfoService;
+
+  @override
+  late final SubscribeRemoteDataSource subscribeRemoteDataSource;
+
+  @override
+  late final SubscribeRepository subscribeRepository;
+
+  @override
+  late final SubscribeService subscribeService;
+
+  @override
   void dispose() {}
 
   @override
@@ -186,6 +222,22 @@ class AppScope implements IAppScope {
 
     authService = AuthService(
       authRepository: authRepository,
+    );
+
+    subscribeRemoteDataSource = SubscribeRemoteDataSource(dio);
+    subscribeRepository = SubscribeRepository(
+      subscribeRemoteDataSource: subscribeRemoteDataSource,
+    );
+    subscribeService = SubscribeService(
+      subscribeRepository: subscribeRepository,
+    );
+
+    userRemoteDataSource = UserRemoteDataSource(dio);
+    userInfoRepository = UserInfoRepository(
+      userRemoteDataSource: userRemoteDataSource,
+    );
+    userInfoService = UserInfoService(
+      userInfoRepository: userInfoRepository,
     );
   }
 

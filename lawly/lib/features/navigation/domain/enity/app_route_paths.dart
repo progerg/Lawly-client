@@ -19,5 +19,5 @@ abstract class AppRoutePaths {
 
   static const String profileRootPath = 'profile';
 
-  static const String profilePath = '';
+  static const String profilePath = 'profile-screen';
 }

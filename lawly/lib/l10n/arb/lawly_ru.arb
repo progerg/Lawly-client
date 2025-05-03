@@ -29,5 +29,15 @@
   "privacy_policy_first_part": "Я прочитал и согласен с ",
   "privacy_policy_second_part": "Положениями и условиями",
   "privacy_policy_third_part": " и ",
-  "privacy_policy_fourth_part": "Политикой конфиденциальности"
+  "privacy_policy_fourth_part": "Политикой конфиденциальности",
+  "settings": "Настройки",
+  "log_out": "Выйти из аккаунта",
+  "privacy_policy": "Политика конфиденциальности",
+  "no_name": "Пользователь",
+  "no_email": "Почта",
+  "no_sub": "Нет данных о подписке",
+  "copy_email": "Email скопирован",
+  "subscription": "Подписка",
+  "error_connection_first_part": "Что-то пошло не так..",
+  "error_connection_second_part": "Проверьте подключение к Интернету"
 }

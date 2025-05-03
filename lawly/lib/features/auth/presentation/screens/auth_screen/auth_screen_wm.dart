@@ -15,6 +15,7 @@ import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen
 import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 
 abstract class IAuthScreenWidgetModel implements IWidgetModel {
@@ -125,13 +126,24 @@ class AuthScreenWidgetModel
         //   password: _passwordController.text,
         // );
 
-        final user = AuthorizedUserEntity(
-          email: _emailController.text,
-          password: _passwordController.text,
-          deviceId: config.deviceId,
-          deviceOs: config.deviceOs,
-          deviceName: config.deviceName,
-        );
+        final localUser = model.saveUserService.getAuthUser();
+
+        final user = localUser != null
+            ? localUser.copyWith(
+                email: _emailController.text,
+                password: _passwordController.text,
+                deviceId: config.deviceId,
+                deviceOs: config.deviceOs,
+                deviceName: config.deviceName,
+              )
+            : AuthorizedUserEntity(
+                name: context.l10n.no_name,
+                email: _emailController.text,
+                password: _passwordController.text,
+                deviceId: config.deviceId,
+                deviceOs: config.deviceOs,
+                deviceName: config.deviceName,
+              );
 
         await model.signIn(entity: user);
 

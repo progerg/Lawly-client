@@ -14,7 +14,7 @@ AuthorizedUserModel _$AuthorizedUserModelFromJson(Map<String, dynamic> json) =>
       deviceOs: json['device_os'] as String,
       deviceName: json['device_name'] as String,
       name: json['name'] as String?,
-      agreeToTerms: json['agree_to_terms'] as bool? ?? true,
+      agreeToTerms: json['agree_to_terms'] as bool? ?? _agreeToTerms,
     );
 
 Map<String, dynamic> _$AuthorizedUserModelToJson(

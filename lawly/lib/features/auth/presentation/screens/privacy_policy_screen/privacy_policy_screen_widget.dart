@@ -5,6 +5,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_wm.dart';
+import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
+import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
 import 'package:union_state/union_state.dart';
 
 @RoutePage()
@@ -33,15 +35,8 @@ class PrivacyPolicyScreenWidget
             data: data,
           ),
         ),
-        loadingBuilder: (context, data) => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        failureBuilder: (context, error, data) => Center(
-          child: Text(
-            'Error loading privacy policy',
-            style: textBold15DarkBlueW700,
-          ),
-        ),
+        loadingBuilder: (context, data) => LawlyCircularIndicator(),
+        failureBuilder: (context, error, data) => LawlyErrorConnection(),
       ),
     );
   }

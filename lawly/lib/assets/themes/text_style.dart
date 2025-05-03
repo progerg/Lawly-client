@@ -9,6 +9,46 @@ const textBold12DarkBlueW400 = TextStyle(
   letterSpacing: 0,
 );
 
+const textBold15DarkBlueW400 = TextStyle(
+  fontSize: 15,
+  fontWeight: FontWeight.w400,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
+const textBold20DarkBlueW400 = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.w400,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
+const textBold18DarkBlueW500 = TextStyle(
+  fontSize: 18,
+  fontWeight: FontWeight.w500,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
+const textBold16DarkBlueW600 = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w600,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
+const textBold20DarkBlueW600 = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
 const textBold24DarkBlueW600 = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.w600,
@@ -52,6 +92,14 @@ const textBold24DarkBlueW700 = TextStyle(
 const textBold32DarkBlueW700 = TextStyle(
   fontSize: 32,
   fontWeight: FontWeight.w700,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
+const textBold20DarkBlueW800 = TextStyle(
+  fontSize: 20,
+  fontWeight: FontWeight.w800,
   fontStyle: FontStyle.normal,
   color: darkBlue,
   letterSpacing: 0,
