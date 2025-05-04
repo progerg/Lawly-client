@@ -14,7 +14,8 @@ void main() async {
 
   Environment.init(
     config: AppConfig(
-      url: BaseUrls.prod,
+      userServiceUrl: BaseUrls.userServiceProd,
+      docServiceUrl: BaseUrls.docServiceProd,
     ),
   );
 

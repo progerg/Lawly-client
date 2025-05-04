@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
-import 'package:lawly/api/data_sources/remote/auth_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';

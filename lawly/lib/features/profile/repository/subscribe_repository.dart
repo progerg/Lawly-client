@@ -1,4 +1,4 @@
-import 'package:lawly/api/data_sources/remote/subscribe_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/subscribe_remote_data_source.dart';
 import 'package:lawly/features/profile/domain/entities/tariff_entity.dart';
 
 abstract class ISubscribeRepository {

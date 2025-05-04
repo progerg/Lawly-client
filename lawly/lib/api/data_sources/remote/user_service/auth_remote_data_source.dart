@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:lawly/api/endpoints/auth_endpoints.dart';
+import 'package:lawly/api/endpoints/user_service/auth_endpoints.dart';
 import 'package:lawly/api/models/auth/auth_tokens_model.dart';
 import 'package:lawly/api/models/auth/authorized_user_model.dart';
 import 'package:retrofit/retrofit.dart';

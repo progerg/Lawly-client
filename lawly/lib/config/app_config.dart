@@ -1,23 +1,28 @@
 import 'package:lawly/config/service/device_info_service.dart';
 
 class AppConfig {
-  final String url;
+  final String userServiceUrl;
+
+  final String docServiceUrl;
 
   final String apiSecretKey;
 
   final String? proxyUrl;
 
   AppConfig({
-    required this.url,
+    required this.userServiceUrl,
+    required this.docServiceUrl,
     this.proxyUrl,
   }) : apiSecretKey = '';
 
   AppConfig copyWith({
-    String? url,
+    String? userServiceUrl,
+    String? docServiceUrl,
     String? proxyUrl,
   }) =>
       AppConfig(
-        url: url ?? this.url,
+        userServiceUrl: userServiceUrl ?? this.userServiceUrl,
+        docServiceUrl: docServiceUrl ?? this.docServiceUrl,
         proxyUrl: proxyUrl ?? this.proxyUrl,
       );
 
