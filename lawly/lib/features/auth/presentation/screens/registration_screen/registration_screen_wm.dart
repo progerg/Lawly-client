@@ -41,6 +41,7 @@ RegistrationScreenWidgetModel defaultRegistrationScreenWidgetModelFactory(
     authService: appScope.authService,
     authBloc: appScope.authBloc,
     saveUserService: appScope.saveUserService,
+    subscribeService: appScope.subscribeService,
   );
 
   return RegistrationScreenWidgetModel(
@@ -154,6 +155,9 @@ class RegistrationScreenWidgetModel
           );
 
           await model.register(entity: user);
+
+          await model.setSubscribe(
+              tariffId: 2); // TODO: заглушка для базового тарифа
 
           await model.saveUserService.saveAuthUser(entity: user);
 

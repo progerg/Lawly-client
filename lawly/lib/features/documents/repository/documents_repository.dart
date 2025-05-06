@@ -1,4 +1,4 @@
-import 'package:lawly/api/data_sources/remote/documents_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/documents_remote_data_source.dart';
 import 'package:lawly/features/auth/domain/entities/privacy_policy_entity.dart';
 
 abstract class IDocumentsRepository {

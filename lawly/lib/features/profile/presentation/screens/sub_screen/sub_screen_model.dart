@@ -15,4 +15,8 @@ class SubScreenModel extends ElementaryModel {
   Future<List<TariffEntity>> getTariffs() async {
     return await _subscribeService.getTariffs();
   }
+
+  Future<void> setSubscribe({required int tariffId}) async {
+    return await _subscribeService.setSubscribe(tariffId: tariffId);
+  }
 }

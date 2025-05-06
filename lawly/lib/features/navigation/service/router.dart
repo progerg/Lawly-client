@@ -13,7 +13,11 @@ import 'package:lawly/features/auth/presentation/screens/registration_screen/reg
 import 'package:lawly/features/chat/presentation/chat_root_screen.dart';
 import 'package:lawly/features/chat/presentation/screens/chat_screen_widget.dart';
 import 'package:lawly/features/chat/presentation/screens/chat_screen_wm.dart';
+import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
+import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/documents/presentation/documents_root_screen.dart';
+import 'package:lawly/features/documents/presentation/screens/document_edit_screen/document_edit_screen_widget.dart';
+import 'package:lawly/features/documents/presentation/screens/document_edit_screen/document_edit_screen_wm.dart';
 import 'package:lawly/features/documents/presentation/screens/documents_screen_widget.dart';
 import 'package:lawly/features/documents/presentation/screens/documents_screen_wm.dart';
 import 'package:lawly/features/init/presentation/screens/welcome_screen.dart';
@@ -34,6 +38,11 @@ import 'package:lawly/features/profile/presentation/screens/settings_screen/sett
 import 'package:lawly/features/profile/presentation/screens/settings_screen/settings_screen_wm.dart';
 import 'package:lawly/features/profile/presentation/screens/sub_screen/sub_screen_widget.dart';
 import 'package:lawly/features/profile/presentation/screens/sub_screen/sub_screen_wm.dart';
+import 'package:lawly/features/templates/domain/entity/template_entity.dart';
+import 'package:lawly/features/templates/presentation/screens/template_edit_field_screen/template_edit_field_screen_widget.dart';
+import 'package:lawly/features/templates/presentation/screens/template_edit_field_screen/template_edit_field_screen_wm.dart';
+import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_widget.dart';
+import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_wm.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_widget.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_root_screen.dart';
 import 'package:lawly/features/nav_bar/presentation/widgets/nav_bar_widget.dart';
@@ -62,6 +71,7 @@ class AppRouter extends RootStackRouter {
             authRoute.copyWith(fullscreenDialog: true),
             registrationRoute.copyWith(fullscreenDialog: true),
             privacyPolicyRoute.copyWith(fullscreenDialog: true),
+            documentEditRoute.copyWith(fullscreenDialog: true),
             CustomRoute(
               initial: !_initService.isFirstLaunch,
               transitionsBuilder: TransitionsBuilders.fadeIn,

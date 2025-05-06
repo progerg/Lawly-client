@@ -3,7 +3,6 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:lawly/assets/colors/colors.dart';
-import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_wm.dart';
 import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
 import 'package:lawly/features/common/widgets/lawly_error_connection.dart';

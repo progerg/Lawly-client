@@ -4,11 +4,13 @@ import 'package:lawly/features/auth/service/auth_service.dart';
 import 'package:lawly/features/auth/service/save_user_service.dart';
 import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
+import 'package:lawly/features/profile/service/subscribe_service.dart';
 
 class RegistrationScreenModel extends ElementaryModel {
   final NavBarObserver navBarObserver;
   final AuthBloc authBloc;
   final SaveUserService saveUserService;
+  final SubscribeService _subscribeService;
   final AuthService _authService;
 
   RegistrationScreenModel({
@@ -16,10 +18,17 @@ class RegistrationScreenModel extends ElementaryModel {
     required AuthService authService,
     required this.authBloc,
     required this.saveUserService,
-  }) : _authService = authService;
+    required SubscribeService subscribeService,
+  })  : _authService = authService,
+        _subscribeService = subscribeService;
 
   Future<void> register({
     required AuthorizedUserEntity entity,
   }) =>
       _authService.register(entity: entity);
+
+  Future<void> setSubscribe({
+    required int tariffId,
+  }) =>
+      _subscribeService.setSubscribe(tariffId: tariffId);
 }

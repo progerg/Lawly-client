@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
-import 'package:lawly/api/data_sources/remote/auth_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
 import 'package:lawly/features/common/domain/entity/user_entity.dart';
 
 abstract class IAuthRepository {

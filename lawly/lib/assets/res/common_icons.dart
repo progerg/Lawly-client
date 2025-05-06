@@ -9,5 +9,7 @@ class CommonIcons {
 
   static const String logoutIcon = '$_basePath/logout.svg';
 
+  static const String duoArrowIcon = '$_basePath/duo_arrow.svg';
+
   static const String _basePath = 'assets/icons/common';
 }

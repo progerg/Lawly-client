@@ -5,20 +5,25 @@ import 'package:dio/io.dart';
 import 'package:lawly/api/data_sources/local/init_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
-import 'package:lawly/api/data_sources/remote/auth_remote_data_source.dart';
-import 'package:lawly/api/data_sources/remote/documents_remote_data_source.dart';
-import 'package:lawly/api/data_sources/remote/subscribe_remote_data_source.dart';
-import 'package:lawly/api/data_sources/remote/user_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/doc_service/generate_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/doc_service/templates_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/documents_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/subscribe_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/user_service/user_remote_data_source.dart';
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/domain/entities/auth_interceptor.dart';
 import 'package:lawly/features/auth/repository/auth_repository.dart';
+import 'package:lawly/features/auth/repository/save_user_repository.dart';
 import 'package:lawly/features/auth/service/auth_service.dart';
 import 'package:lawly/features/auth/service/save_user_service.dart';
 import 'package:lawly/features/documents/repository/documents_repository.dart';
+import 'package:lawly/features/documents/repository/personal_documents_repository.dart';
 import 'package:lawly/features/documents/service/documents_service.dart';
+import 'package:lawly/features/documents/service/personal_documents_service.dart';
 import 'package:lawly/features/init/repository/i_init_reposioty.dart';
 import 'package:lawly/features/init/repository/init_repository.dart';
 import 'package:lawly/features/init/service/init_service.dart';
@@ -29,10 +34,14 @@ import 'package:lawly/features/profile/repository/subscribe_repository.dart';
 import 'package:lawly/features/profile/repository/user_info_repository.dart';
 import 'package:lawly/features/profile/service/subscribe_service.dart';
 import 'package:lawly/features/profile/service/user_info_service.dart';
+import 'package:lawly/features/templates/repository/template_repository.dart';
+import 'package:lawly/features/templates/service/template_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class IAppScope {
-  Dio get dio;
+  Dio get dioUserService;
+
+  Dio get dioDocService;
 
   AppRouter get router;
 
@@ -62,6 +71,8 @@ abstract class IAppScope {
 
   SaveUserLocalDataSource get saveUserLocalDataSource;
 
+  SaveUserRepository get saveUserRepository;
+
   SaveUserService get saveUserService;
 
   DocumentsRemoteDataSource get documentsRemoteDataSource;
@@ -82,6 +93,18 @@ abstract class IAppScope {
 
   SubscribeService get subscribeService;
 
+  TemplatesRemoteDataSource get templatesRemoteDataSource;
+
+  PersonalDocumentsRepository get personalDocumentsRepository;
+
+  PersonalDocumentsService get personalDocumentsService;
+
+  TemplateRepository get templateRepository;
+
+  TemplateService get templateService;
+
+  GenerateRemoteDataSource get generateRemoteDataSource;
+
   void dispose();
 
   Future<void> init();
@@ -89,7 +112,10 @@ abstract class IAppScope {
 
 class AppScope implements IAppScope {
   @override
-  late final Dio dio;
+  late final Dio dioUserService;
+
+  @override
+  late final Dio dioDocService;
 
   @override
   late final AppRouter router;
@@ -134,6 +160,9 @@ class AppScope implements IAppScope {
   late final SaveUserLocalDataSource saveUserLocalDataSource;
 
   @override
+  late final SaveUserRepository saveUserRepository;
+
+  @override
   late final SaveUserService saveUserService;
 
   @override
@@ -164,13 +193,41 @@ class AppScope implements IAppScope {
   late final SubscribeService subscribeService;
 
   @override
+  late final TemplatesRemoteDataSource templatesRemoteDataSource;
+
+  @override
+  late final PersonalDocumentsRepository personalDocumentsRepository;
+
+  @override
+  late final PersonalDocumentsService personalDocumentsService;
+
+  @override
+  late final TemplateRepository templateRepository;
+
+  @override
+  late final TemplateService templateService;
+
+  @override
+  late final GenerateRemoteDataSource generateRemoteDataSource;
+
+  @override
   void dispose() {}
 
   @override
   Future<void> init() async {
+    final env = Environment<AppConfig>.instance();
+
     prefs = await SharedPreferences.getInstance();
 
-    dio = _initDio();
+    dioUserService = _initDio(
+      baseUrl: env.config.userServiceUrl,
+      proxyUrl: env.config.proxyUrl,
+    );
+
+    dioDocService = _initDio(
+      baseUrl: env.config.docServiceUrl,
+      proxyUrl: env.config.proxyUrl,
+    );
 
     scaffoldMessengerWrapper = ScaffoldMessengerWrapper();
 
@@ -188,16 +245,19 @@ class AppScope implements IAppScope {
     );
 
     saveUserLocalDataSource = SaveUserLocalDataSource(prefs: prefs);
-    saveUserService = SaveUserService(
+    saveUserRepository = SaveUserRepository(
       saveUserLocalDataSource: saveUserLocalDataSource,
+    );
+    saveUserService = SaveUserService(
+      saveUserRepository: saveUserRepository,
     );
 
     tokenLocalDataSource = TokenLocalDataSource(prefs: prefs);
-    authRemoteDataSource = AuthRemoteDataSource(dio);
+    authRemoteDataSource = AuthRemoteDataSource(dioUserService);
 
-    dio.interceptors.add(
+    dioUserService.interceptors.add(
       AuthInterceptor(
-        dio: dio,
+        dio: dioUserService,
         authRemoteDataSource: authRemoteDataSource,
         tokenLocalDataSource: tokenLocalDataSource,
         authBloc: authBloc,
@@ -205,7 +265,17 @@ class AppScope implements IAppScope {
       ),
     );
 
-    documentsRemoteDataSource = DocumentsRemoteDataSource(dio);
+    dioDocService.interceptors.add(
+      AuthInterceptor(
+        dio: dioDocService,
+        authRemoteDataSource: authRemoteDataSource,
+        tokenLocalDataSource: tokenLocalDataSource,
+        authBloc: authBloc,
+        appRouter: router,
+      ),
+    );
+
+    documentsRemoteDataSource = DocumentsRemoteDataSource(dioUserService);
     documentsRepository = DocumentsRepository(
       documentsRemoteDataSource: documentsRemoteDataSource,
     );
@@ -224,7 +294,7 @@ class AppScope implements IAppScope {
       authRepository: authRepository,
     );
 
-    subscribeRemoteDataSource = SubscribeRemoteDataSource(dio);
+    subscribeRemoteDataSource = SubscribeRemoteDataSource(dioUserService);
     subscribeRepository = SubscribeRepository(
       subscribeRemoteDataSource: subscribeRemoteDataSource,
     );
@@ -232,29 +302,45 @@ class AppScope implements IAppScope {
       subscribeRepository: subscribeRepository,
     );
 
-    userRemoteDataSource = UserRemoteDataSource(dio);
+    userRemoteDataSource = UserRemoteDataSource(dioUserService);
     userInfoRepository = UserInfoRepository(
       userRemoteDataSource: userRemoteDataSource,
     );
     userInfoService = UserInfoService(
       userInfoRepository: userInfoRepository,
     );
+
+    templatesRemoteDataSource = TemplatesRemoteDataSource(dioDocService);
+    generateRemoteDataSource = GenerateRemoteDataSource(dioDocService);
+
+    personalDocumentsRepository = PersonalDocumentsRepository(
+      templatesRemoteDataSource: templatesRemoteDataSource,
+    );
+    personalDocumentsService = PersonalDocumentsService(
+      repository: personalDocumentsRepository,
+    );
+
+    templateRepository = TemplateRepository(
+      templatesRemoteDataSource: templatesRemoteDataSource,
+      generateRemoteDataSource: generateRemoteDataSource,
+    );
+    templateService = TemplateService(
+      templateRepository: templateRepository,
+    );
   }
 
-  Dio _initDio() {
-    final env = Environment<AppConfig>.instance();
+  Dio _initDio({required String baseUrl, String? proxyUrl}) {
     const timeout = Duration(seconds: 30);
 
     final dio = Dio();
 
     dio.options
-      ..baseUrl = env.config.url
+      ..baseUrl = baseUrl
       ..connectTimeout = timeout
       ..receiveTimeout = timeout
       ..sendTimeout = timeout;
 
     (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-      final proxyUrl = env.config.proxyUrl;
       final client = HttpClient()..idleTimeout = const Duration(seconds: 3);
       if (proxyUrl != null && proxyUrl.isNotEmpty) {
         client

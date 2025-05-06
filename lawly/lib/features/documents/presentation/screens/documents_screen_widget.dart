@@ -3,7 +3,10 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
+import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
+import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/documents/presentation/screens/documents_screen_wm.dart';
+import 'package:union_state/union_state.dart';
 
 @RoutePage()
 class DocumentsScreenWidget
@@ -24,11 +27,97 @@ class DocumentsScreenWidget
         backgroundColor: milkyWhite,
         elevation: 0,
       ),
-      body: Center(
-        child: Text(
-          'Documents Screen',
-        ),
+      body: UnionStateListenableBuilder<List<DocEntity>>(
+        unionStateListenable: wm.documentsState,
+        builder: (context, data) {
+          return _DocumentsView(
+            onOpenEditDocument: wm.onOpenEditDocument,
+            documents: data,
+          );
+        },
+        loadingBuilder: (context, data) {
+          return _DocumentsView(
+            onOpenEditDocument: wm.onOpenEditDocument,
+            documents: data ?? [],
+          );
+        },
+        failureBuilder: (context, e, data) {
+          return _DocumentsView(
+            onOpenEditDocument: wm.onOpenEditDocument,
+            documents: data ?? [],
+          );
+        },
       ),
     );
+  }
+}
+
+class _DocumentsView extends StatelessWidget {
+  final void Function(DocEntity) onOpenEditDocument;
+  final List<DocEntity> documents;
+
+  const _DocumentsView({
+    required this.onOpenEditDocument,
+    required this.documents,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 50,
+        bottom: 50,
+      ),
+      child: ListView.builder(
+        itemCount: documents.length,
+        itemBuilder: (context, index) {
+          return _DocumentTile(
+            onOpenEditDocument: () {
+              onOpenEditDocument(documents[index]);
+            },
+            document: documents[index],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DocumentTile extends StatelessWidget {
+  final VoidCallback onOpenEditDocument;
+  final DocEntity document;
+
+  const _DocumentTile({
+    required this.onOpenEditDocument,
+    required this.document,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(Icons.description),
+      title: Text(document.nameRu),
+      subtitle: _hasFilledFields(document.fields ?? [])
+          ? Text(_getDocumentSummary(document.fields ?? []))
+          : Text('Добавить', style: TextStyle(color: Colors.grey)),
+      // Иконка плюса для пустых документов
+      trailing: _hasFilledFields(document.fields ?? [])
+          ? Icon(Icons.chevron_right)
+          : Icon(Icons.add_circle_outline),
+      onTap: onOpenEditDocument,
+    );
+  }
+
+  bool _hasFilledFields(List<FieldEntity> fields) {
+    return fields
+        .any((field) => field.value != null && field.value!.isNotEmpty);
+  }
+
+  String _getDocumentSummary(List<FieldEntity> fields) {
+    // Объединяем значения заполненных полей через пробел
+    return fields
+        .where((field) => field.value != null && field.value!.isNotEmpty)
+        .map((field) => field.value)
+        .join(' ');
   }
 }

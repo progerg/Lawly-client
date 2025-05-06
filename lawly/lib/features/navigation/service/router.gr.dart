@@ -14,7 +14,7 @@ part of 'router.dart';
 /// [AuthRootScreen]
 class AuthRouter extends PageRouteInfo<void> {
   const AuthRouter({List<PageRouteInfo>? children})
-      : super(AuthRouter.name, initialChildren: children);
+    : super(AuthRouter.name, initialChildren: children);
 
   static const String name = 'AuthRouter';
 
@@ -32,14 +32,16 @@ class AuthRoute extends PageRouteInfo<AuthRouteArgs> {
   AuthRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultAuthScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultAuthScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          AuthRoute.name,
-          args: AuthRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         AuthRoute.name,
+         args: AuthRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'AuthRoute';
 
@@ -63,7 +65,9 @@ class AuthRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -77,14 +81,16 @@ class AuthSelectionRoute extends PageRouteInfo<AuthSelectionRouteArgs> {
   AuthSelectionRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultAuthSelectionScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultAuthSelectionScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          AuthSelectionRoute.name,
-          args: AuthSelectionRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         AuthSelectionRoute.name,
+         args: AuthSelectionRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'AuthSelectionRoute';
 
@@ -111,7 +117,9 @@ class AuthSelectionRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -123,7 +131,7 @@ class AuthSelectionRouteArgs {
 /// [ChatRootScreen]
 class ChatRouter extends PageRouteInfo<void> {
   const ChatRouter({List<PageRouteInfo>? children})
-      : super(ChatRouter.name, initialChildren: children);
+    : super(ChatRouter.name, initialChildren: children);
 
   static const String name = 'ChatRouter';
 
@@ -141,14 +149,16 @@ class ChatRoute extends PageRouteInfo<ChatRouteArgs> {
   ChatRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultChatScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultChatScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          ChatRoute.name,
-          args: ChatRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         ChatRoute.name,
+         args: ChatRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'ChatRoute';
 
@@ -172,7 +182,9 @@ class ChatRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -181,10 +193,69 @@ class ChatRouteArgs {
 }
 
 /// generated route for
+/// [DocumentEditScreenWidget]
+class DocumentEditRoute extends PageRouteInfo<DocumentEditRouteArgs> {
+  DocumentEditRoute({
+    Key? key,
+    required DocEntity document,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultDocumentEditScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         DocumentEditRoute.name,
+         args: DocumentEditRouteArgs(
+           key: key,
+           document: document,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'DocumentEditRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<DocumentEditRouteArgs>();
+      return DocumentEditScreenWidget(
+        key: args.key,
+        document: args.document,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class DocumentEditRouteArgs {
+  const DocumentEditRouteArgs({
+    this.key,
+    required this.document,
+    this.wmFactory = defaultDocumentEditScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final DocEntity document;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'DocumentEditRouteArgs{key: $key, document: $document, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [DocumentsRootScreen]
 class DocumentsRouter extends PageRouteInfo<void> {
   const DocumentsRouter({List<PageRouteInfo>? children})
-      : super(DocumentsRouter.name, initialChildren: children);
+    : super(DocumentsRouter.name, initialChildren: children);
 
   static const String name = 'DocumentsRouter';
 
@@ -202,14 +273,16 @@ class DocumentsRoute extends PageRouteInfo<DocumentsRouteArgs> {
   DocumentsRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultDocumentsScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultDocumentsScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          DocumentsRoute.name,
-          args: DocumentsRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         DocumentsRoute.name,
+         args: DocumentsRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'DocumentsRoute';
 
@@ -233,7 +306,9 @@ class DocumentsRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -245,7 +320,7 @@ class DocumentsRouteArgs {
 /// [EmptyRouterPage]
 class BaseRouter extends PageRouteInfo<void> {
   const BaseRouter({List<PageRouteInfo>? children})
-      : super(BaseRouter.name, initialChildren: children);
+    : super(BaseRouter.name, initialChildren: children);
 
   static const String name = 'BaseRouter';
 
@@ -261,7 +336,7 @@ class BaseRouter extends PageRouteInfo<void> {
 /// [NavBarWidget]
 class HomeRouter extends PageRouteInfo<void> {
   const HomeRouter({List<PageRouteInfo>? children})
-      : super(HomeRouter.name, initialChildren: children);
+    : super(HomeRouter.name, initialChildren: children);
 
   static const String name = 'HomeRouter';
 
@@ -279,14 +354,16 @@ class PrivacyPolicyRoute extends PageRouteInfo<PrivacyPolicyRouteArgs> {
   PrivacyPolicyRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultPrivacyPolicyScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultPrivacyPolicyScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          PrivacyPolicyRoute.name,
-          args: PrivacyPolicyRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         PrivacyPolicyRoute.name,
+         args: PrivacyPolicyRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'PrivacyPolicyRoute';
 
@@ -313,7 +390,9 @@ class PrivacyPolicyRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -325,7 +404,7 @@ class PrivacyPolicyRouteArgs {
 /// [ProfileRootScreen]
 class ProfileRouter extends PageRouteInfo<void> {
   const ProfileRouter({List<PageRouteInfo>? children})
-      : super(ProfileRouter.name, initialChildren: children);
+    : super(ProfileRouter.name, initialChildren: children);
 
   static const String name = 'ProfileRouter';
 
@@ -343,14 +422,16 @@ class ProfileRoute extends PageRouteInfo<ProfileRouteArgs> {
   ProfileRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultProfileScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultProfileScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          ProfileRoute.name,
-          args: ProfileRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         ProfileRoute.name,
+         args: ProfileRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'ProfileRoute';
 
@@ -374,7 +455,9 @@ class ProfileRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -388,14 +471,16 @@ class RegistrationRoute extends PageRouteInfo<RegistrationRouteArgs> {
   RegistrationRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultRegistrationScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultRegistrationScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          RegistrationRoute.name,
-          args: RegistrationRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         RegistrationRoute.name,
+         args: RegistrationRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'RegistrationRoute';
 
@@ -419,7 +504,9 @@ class RegistrationRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -433,14 +520,16 @@ class SettingsRoute extends PageRouteInfo<SettingsRouteArgs> {
   SettingsRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultSettingsScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultSettingsScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          SettingsRoute.name,
-          args: SettingsRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         SettingsRoute.name,
+         args: SettingsRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'SettingsRoute';
 
@@ -464,7 +553,9 @@ class SettingsRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -478,14 +569,16 @@ class SubRoute extends PageRouteInfo<SubRouteArgs> {
   SubRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultSubScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultSubScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          SubRoute.name,
-          args: SubRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         SubRoute.name,
+         args: SubRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'SubRoute';
 
@@ -509,7 +602,9 @@ class SubRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -518,10 +613,128 @@ class SubRouteArgs {
 }
 
 /// generated route for
+/// [TemplateEditFieldScreenWidget]
+class TemplateEditFieldRoute extends PageRouteInfo<TemplateEditFieldRouteArgs> {
+  TemplateEditFieldRoute({
+    Key? key,
+    required FieldEntity fieldEntity,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplateEditFieldScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TemplateEditFieldRoute.name,
+         args: TemplateEditFieldRouteArgs(
+           key: key,
+           fieldEntity: fieldEntity,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'TemplateEditFieldRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TemplateEditFieldRouteArgs>();
+      return TemplateEditFieldScreenWidget(
+        key: args.key,
+        fieldEntity: args.fieldEntity,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class TemplateEditFieldRouteArgs {
+  const TemplateEditFieldRouteArgs({
+    this.key,
+    required this.fieldEntity,
+    this.wmFactory = defaultTemplateEditFieldScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final FieldEntity fieldEntity;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'TemplateEditFieldRouteArgs{key: $key, fieldEntity: $fieldEntity, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
+/// [TemplateNoAuthScreenWidget]
+class TemplateNoAuthRoute extends PageRouteInfo<TemplateNoAuthRouteArgs> {
+  TemplateNoAuthRoute({
+    Key? key,
+    required TemplateEntity template,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplateNoAuthScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TemplateNoAuthRoute.name,
+         args: TemplateNoAuthRouteArgs(
+           key: key,
+           template: template,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'TemplateNoAuthRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TemplateNoAuthRouteArgs>();
+      return TemplateNoAuthScreenWidget(
+        key: args.key,
+        template: args.template,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class TemplateNoAuthRouteArgs {
+  const TemplateNoAuthRouteArgs({
+    this.key,
+    required this.template,
+    this.wmFactory = defaultTemplateNoAuthScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final TemplateEntity template;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'TemplateNoAuthRouteArgs{key: $key, template: $template, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [TemplatesRootScreen]
 class TemplatesRouter extends PageRouteInfo<void> {
   const TemplatesRouter({List<PageRouteInfo>? children})
-      : super(TemplatesRouter.name, initialChildren: children);
+    : super(TemplatesRouter.name, initialChildren: children);
 
   static const String name = 'TemplatesRouter';
 
@@ -539,14 +752,16 @@ class TemplatesRoute extends PageRouteInfo<TemplatesRouteArgs> {
   TemplatesRoute({
     Key? key,
     WidgetModelFactory<
-            WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>>
-        wmFactory = defaultTemplatesScreenWidgetModelFactory,
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplatesScreenWidgetModelFactory,
     List<PageRouteInfo>? children,
   }) : super(
-          TemplatesRoute.name,
-          args: TemplatesRouteArgs(key: key, wmFactory: wmFactory),
-          initialChildren: children,
-        );
+         TemplatesRoute.name,
+         args: TemplatesRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
 
   static const String name = 'TemplatesRoute';
 
@@ -570,7 +785,9 @@ class TemplatesRouteArgs {
   final Key? key;
 
   final WidgetModelFactory<
-      WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>> wmFactory;
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
 
   @override
   String toString() {
@@ -582,7 +799,7 @@ class TemplatesRouteArgs {
 /// [WelcomeScreen]
 class WelcomeRoute extends PageRouteInfo<void> {
   const WelcomeRoute({List<PageRouteInfo>? children})
-      : super(WelcomeRoute.name, initialChildren: children);
+    : super(WelcomeRoute.name, initialChildren: children);
 
   static const String name = 'WelcomeRoute';
 

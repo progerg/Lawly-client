@@ -42,6 +42,7 @@ class SubScreenWidget extends ElementaryWidget<ISubScreenWidgetModel> {
         unionStateListenable: wm.tariffsState,
         builder: (context, data) => _TariffsView(
           tariffs: data,
+          onSetTariff: wm.onSetTariff,
         ),
         loadingBuilder: (context, data) => LawlyCircularIndicator(),
         failureBuilder: (context, e, data) => LawlyErrorConnection(),
@@ -51,10 +52,12 @@ class SubScreenWidget extends ElementaryWidget<ISubScreenWidgetModel> {
 }
 
 class _TariffsView extends StatelessWidget {
+  final void Function(int) onSetTariff;
   final List<TariffEntity> tariffs;
 
   const _TariffsView({
     required this.tariffs,
+    required this.onSetTariff,
   });
 
   @override
@@ -68,6 +71,7 @@ class _TariffsView extends StatelessWidget {
         itemCount: tariffs.length,
         itemBuilder: (context, index) => _TariffTile(
           tariff: tariffs[index],
+          onSetTariff: () => onSetTariff(tariffs[index].id),
         ),
       ),
     );
@@ -75,10 +79,12 @@ class _TariffsView extends StatelessWidget {
 }
 
 class _TariffTile extends StatelessWidget {
+  final VoidCallback onSetTariff;
   final TariffEntity tariff;
 
   const _TariffTile({
     required this.tariff,
+    required this.onSetTariff,
   });
 
   @override

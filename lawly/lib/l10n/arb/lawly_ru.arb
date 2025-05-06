@@ -39,5 +39,6 @@
   "copy_email": "Email скопирован",
   "subscription": "Подписка",
   "error_connection_first_part": "Что-то пошло не так..",
-  "error_connection_second_part": "Проверьте подключение к Интернету"
+  "error_connection_second_part": "Проверьте подключение к Интернету",
+  "apply": "Оформить"
 }
