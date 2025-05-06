@@ -19,6 +19,8 @@ abstract class ISubScreenWidgetModel implements IWidgetModel {
 
   String get title;
 
+  void onSetTariff(int tariffId);
+
   void goBack();
 }
 
@@ -99,6 +101,11 @@ class SubScreenWidgetModel extends WidgetModel<SubScreenWidget, SubScreenModel>
         );
       }
     }
+  }
+
+  @override
+  Future<void> onSetTariff(int tariffId) async {
+    model.setSubscribe(tariffId: tariffId);
   }
 
   @override

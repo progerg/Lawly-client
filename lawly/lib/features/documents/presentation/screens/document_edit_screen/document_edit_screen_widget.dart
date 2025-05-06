@@ -112,10 +112,14 @@ class _DocEditViewState extends State<_DocEditView> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+
     return Padding(
       padding: EdgeInsets.only(
         top: 50,
         bottom: 50,
+        right: mediaQuery.size.width * 0.05,
+        left: mediaQuery.size.width * 0.05,
       ),
       child: Column(
         children: [

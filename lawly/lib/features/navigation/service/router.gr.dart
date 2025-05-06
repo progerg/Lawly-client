@@ -613,6 +613,124 @@ class SubRouteArgs {
 }
 
 /// generated route for
+/// [TemplateEditFieldScreenWidget]
+class TemplateEditFieldRoute extends PageRouteInfo<TemplateEditFieldRouteArgs> {
+  TemplateEditFieldRoute({
+    Key? key,
+    required FieldEntity fieldEntity,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplateEditFieldScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TemplateEditFieldRoute.name,
+         args: TemplateEditFieldRouteArgs(
+           key: key,
+           fieldEntity: fieldEntity,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'TemplateEditFieldRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TemplateEditFieldRouteArgs>();
+      return TemplateEditFieldScreenWidget(
+        key: args.key,
+        fieldEntity: args.fieldEntity,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class TemplateEditFieldRouteArgs {
+  const TemplateEditFieldRouteArgs({
+    this.key,
+    required this.fieldEntity,
+    this.wmFactory = defaultTemplateEditFieldScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final FieldEntity fieldEntity;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'TemplateEditFieldRouteArgs{key: $key, fieldEntity: $fieldEntity, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
+/// [TemplateNoAuthScreenWidget]
+class TemplateNoAuthRoute extends PageRouteInfo<TemplateNoAuthRouteArgs> {
+  TemplateNoAuthRoute({
+    Key? key,
+    required TemplateEntity template,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplateNoAuthScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TemplateNoAuthRoute.name,
+         args: TemplateNoAuthRouteArgs(
+           key: key,
+           template: template,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'TemplateNoAuthRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TemplateNoAuthRouteArgs>();
+      return TemplateNoAuthScreenWidget(
+        key: args.key,
+        template: args.template,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class TemplateNoAuthRouteArgs {
+  const TemplateNoAuthRouteArgs({
+    this.key,
+    required this.template,
+    this.wmFactory = defaultTemplateNoAuthScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final TemplateEntity template;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'TemplateNoAuthRouteArgs{key: $key, template: $template, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [TemplatesRootScreen]
 class TemplatesRouter extends PageRouteInfo<void> {
   const TemplatesRouter({List<PageRouteInfo>? children})

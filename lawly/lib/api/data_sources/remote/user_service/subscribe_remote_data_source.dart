@@ -12,4 +12,9 @@ abstract class SubscribeRemoteDataSource {
 
   @GET(SubscribeEndpoints.tariffs)
   Future<List<TariffModel>> getTariffs();
+
+  @POST(SubscribeEndpoints.subscribe)
+  Future<void> setSubscribe({
+    @Field('tariff_id') required int tariffId,
+  });
 }

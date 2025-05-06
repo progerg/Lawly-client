@@ -77,10 +77,11 @@ class DocumentEditScreenWidgetModel
           (element) => element.id == widget.document.id,
         )
         .firstOrNull;
-    _fieldsState.loading(localDocument?.fields ?? []);
+    // _fieldsState.loading(localDocument?.fields ?? []);
     try {
-      final remoteDocument =
-          await model.getPersonalDocumentById(id: widget.document.id);
+      final remoteDocument = await model.getPersonalDocumentById(
+        id: widget.document.id,
+      );
       // await Future.value(
       //   DocEntity(
       //     id: 1,
@@ -118,6 +119,7 @@ class DocumentEditScreenWidgetModel
         _fieldsState.content(remoteDocument.fields ?? []);
       }
     } on Exception catch (e) {
+      log('Error: ${e.toString()}');
       _fieldsState.failure(e, localDocument?.fields ?? []);
     }
   }

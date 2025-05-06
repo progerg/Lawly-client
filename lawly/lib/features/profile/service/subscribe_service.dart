@@ -10,4 +10,8 @@ class SubscribeService {
   Future<List<TariffEntity>> getTariffs() async {
     return await _subscribeRepository.getTariffs();
   }
+
+  Future<void> setSubscribe({required int tariffId}) async {
+    return await _subscribeRepository.setSubscribe(tariffId: tariffId);
+  }
 }

@@ -5,6 +5,7 @@ import 'package:dio/io.dart';
 import 'package:lawly/api/data_sources/local/init_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
+import 'package:lawly/api/data_sources/remote/doc_service/generate_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/templates_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/user_service/documents_remote_data_source.dart';
@@ -33,6 +34,8 @@ import 'package:lawly/features/profile/repository/subscribe_repository.dart';
 import 'package:lawly/features/profile/repository/user_info_repository.dart';
 import 'package:lawly/features/profile/service/subscribe_service.dart';
 import 'package:lawly/features/profile/service/user_info_service.dart';
+import 'package:lawly/features/templates/repository/template_repository.dart';
+import 'package:lawly/features/templates/service/template_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class IAppScope {
@@ -95,6 +98,12 @@ abstract class IAppScope {
   PersonalDocumentsRepository get personalDocumentsRepository;
 
   PersonalDocumentsService get personalDocumentsService;
+
+  TemplateRepository get templateRepository;
+
+  TemplateService get templateService;
+
+  GenerateRemoteDataSource get generateRemoteDataSource;
 
   void dispose();
 
@@ -191,6 +200,15 @@ class AppScope implements IAppScope {
 
   @override
   late final PersonalDocumentsService personalDocumentsService;
+
+  @override
+  late final TemplateRepository templateRepository;
+
+  @override
+  late final TemplateService templateService;
+
+  @override
+  late final GenerateRemoteDataSource generateRemoteDataSource;
 
   @override
   void dispose() {}
@@ -293,11 +311,21 @@ class AppScope implements IAppScope {
     );
 
     templatesRemoteDataSource = TemplatesRemoteDataSource(dioDocService);
+    generateRemoteDataSource = GenerateRemoteDataSource(dioDocService);
+
     personalDocumentsRepository = PersonalDocumentsRepository(
       templatesRemoteDataSource: templatesRemoteDataSource,
     );
     personalDocumentsService = PersonalDocumentsService(
       repository: personalDocumentsRepository,
+    );
+
+    templateRepository = TemplateRepository(
+      templatesRemoteDataSource: templatesRemoteDataSource,
+      generateRemoteDataSource: generateRemoteDataSource,
+    );
+    templateService = TemplateService(
+      templateRepository: templateRepository,
     );
   }
 
