@@ -161,7 +161,7 @@ class RegistrationScreenWidgetModel
         );
         return;
       }
-      if (_isAgreePrivacyPolicy) {
+      if (!_isAgreePrivacyPolicy) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           'Примите условия политики конфиденциальности',
