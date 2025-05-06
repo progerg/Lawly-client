@@ -22,6 +22,7 @@ abstract class IRegistrationScreenWidgetModel implements IWidgetModel {
   TextEditingController get nameTextController;
   TextEditingController get emailTextController;
   TextEditingController get passwordTextController;
+  TextEditingController get confirmPasswordTextController;
 
   void onCompleteRegistration();
 
@@ -64,6 +65,7 @@ class RegistrationScreenWidgetModel
   final _nameTextController = TextEditingController();
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  final _confirmPasswordTextController = TextEditingController();
 
   bool _isAgreePrivacyPolicy = false;
 
@@ -136,55 +138,68 @@ class RegistrationScreenWidgetModel
   TextEditingController get passwordTextController => _passwordTextController;
 
   @override
+  TextEditingController get confirmPasswordTextController =>
+      _confirmPasswordTextController;
+
+  @override
   Future<void> onCompleteRegistration() async {
     try {
-      if (_nameTextController.text.isNotEmpty &&
-          _emailTextController.text.isNotEmpty &&
-          _passwordTextController.text.isNotEmpty) {
-        if (_isAgreePrivacyPolicy) {
-          final config = Environment<AppConfig>.instance().config;
-
-          final user = AuthorizedUserEntity(
-            name: _nameTextController.text,
-            email: _emailTextController.text,
-            password: _passwordTextController.text,
-            deviceId: config.deviceId,
-            deviceOs: config.deviceOs,
-            deviceName: config.deviceName,
-            agreeToTerms: true,
-          );
-
-          await model.register(entity: user);
-
-          await model.setSubscribe(
-              tariffId: 2); // TODO: заглушка для базового тарифа
-
-          await model.saveUserService.saveAuthUser(entity: user);
-
-          model.authBloc.add(
-            AuthEvent.loggedIn(authorizedUser: user),
-          );
-
-          appRouter.push(
-            switch (model.navBarObserver.currentNavBarElement.value) {
-              NavBarElement.document => DocumentsRouter(),
-              NavBarElement.template => TemplatesRouter(),
-              NavBarElement.chat => ChatRouter(),
-              NavBarElement.profile => ProfileRouter(),
-            },
-          );
-        } else {
-          _scaffoldMessengerWrapper.showSnackBar(
-            context,
-            'Примите условия политики конфиденциальности',
-          );
-        }
-      } else {
+      if (_nameTextController.text.isEmpty ||
+          _emailTextController.text.isEmpty ||
+          _passwordTextController.text.isEmpty ||
+          _confirmPasswordTextController.text.isEmpty) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           'Заполните все поля',
         );
+        return;
       }
+      if (_passwordTextController.text != _confirmPasswordTextController.text) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Пароли не совпадают',
+        );
+        return;
+      }
+      if (_isAgreePrivacyPolicy) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          'Примите условия политики конфиденциальности',
+        );
+        return;
+      }
+
+      final config = Environment<AppConfig>.instance().config;
+
+      final user = AuthorizedUserEntity(
+        name: _nameTextController.text,
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+        deviceId: config.deviceId,
+        deviceOs: config.deviceOs,
+        deviceName: config.deviceName,
+        agreeToTerms: true,
+      );
+
+      await model.register(entity: user);
+
+      await model.setSubscribe(
+          tariffId: 2); // TODO: заглушка для базового тарифа
+
+      await model.saveUserService.saveAuthUser(entity: user);
+
+      model.authBloc.add(
+        AuthEvent.loggedIn(authorizedUser: user),
+      );
+
+      appRouter.push(
+        switch (model.navBarObserver.currentNavBarElement.value) {
+          NavBarElement.document => DocumentsRouter(),
+          NavBarElement.template => TemplatesRouter(),
+          NavBarElement.chat => ChatRouter(),
+          NavBarElement.profile => ProfileRouter(),
+        },
+      );
     } on DioException catch (e) {
       log('Error: ${e.response?.statusCode.toString() ?? 'Unknown error'}');
       onErrorHandle(e);

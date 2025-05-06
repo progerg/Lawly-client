@@ -3,6 +3,8 @@ import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
+import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
+import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_wm.dart';
 import 'package:union_state/union_state.dart';
@@ -33,12 +35,14 @@ class TemplatesScreenWidget
                 onTemplateTap: wm.onTemplateTap, templates: data);
           },
           loadingBuilder: (context, data) {
-            return _TemplatesView(
-                onTemplateTap: wm.onTemplateTap, templates: data ?? []);
+            // return _TemplatesView(
+            //     onTemplateTap: wm.onTemplateTap, templates: data ?? []);
+            return LawlyCircularIndicator();
           },
           failureBuilder: (context, e, data) {
-            return _TemplatesView(
-                onTemplateTap: wm.onTemplateTap, templates: data ?? []);
+            // return _TemplatesView(
+            //     onTemplateTap: wm.onTemplateTap, templates: data ?? []);
+            return LawlyErrorConnection();
           }),
     );
   }
@@ -86,38 +90,38 @@ class _TemplateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: lightGray,
-      ),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                  child: Container(
-                    color: Colors.grey[300],
-                    width: double.infinity,
-                    child: template.imageUrl.isNotEmpty
-                        ? Image.network(
-                            // template.imageUrl,
-                            'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const SizedBox(),
-                          )
-                        : const SizedBox(),
+    return GestureDetector(
+      onTap: onTemplateTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: lightGray,
+        ),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                    child: Container(
+                      color: Colors.grey[300],
+                      width: double.infinity,
+                      child: template.imageUrl.isNotEmpty
+                          ? Image.network(
+                              // template.imageUrl,
+                              'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const SizedBox(),
+                            )
+                          : const SizedBox(),
+                    ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: onTemplateTap,
-                child: Padding(
+                Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,10 +147,10 @@ class _TemplateCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
