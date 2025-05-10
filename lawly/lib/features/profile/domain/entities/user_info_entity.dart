@@ -4,12 +4,12 @@ class UserInfoEntity {
   final int userId;
   final TariffEntity tariff;
   final String startDate;
-  final String endDate;
+  final String? endDate;
 
   UserInfoEntity({
     required this.userId,
     required this.tariff,
     required this.startDate,
-    required this.endDate,
+    this.endDate,
   });
 }

@@ -84,7 +84,7 @@ class TemplatesScreenWidgetModel
       if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Ошибка валидации данных',
+          context.l10n.error_validation_data,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -93,12 +93,12 @@ class TemplatesScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }

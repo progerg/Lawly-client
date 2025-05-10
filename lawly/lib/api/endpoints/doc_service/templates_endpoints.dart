@@ -1,12 +1,12 @@
 class TemplatesEndpoints {
   static const String _baseUrl = '/api/v1';
 
-  static const String documents = '$_baseUrl/documents';
+  static const String documents = '$_baseUrl/documents/documents';
 
   static const String documentStructureById =
       '$_baseUrl/documents/document-structure/{document_id}';
 
-  static const String templates = '$_baseUrl/templates';
+  static const String templates = '$_baseUrl/templates/templates';
 
   static const String templateById = '$_baseUrl/templates/{template_id}';
 
@@ -17,4 +17,6 @@ class TemplatesEndpoints {
 
   static const String documentUpdate =
       '$_baseUrl/documents/update/{document_creation_id}';
+
+  static const String generate = '$_baseUrl/documents/generate';
 }

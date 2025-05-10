@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lawly/api/endpoints/doc_service/templates_endpoints.dart';
 import 'package:lawly/api/models/templates/generate_req_model.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -9,7 +10,7 @@ abstract class GenerateRemoteDataSource {
   factory GenerateRemoteDataSource(Dio dio, {String baseUrl}) =
       _GenerateRemoteDataSource;
 
-  @POST('/api/v1/documents/generate')
+  @POST(TemplatesEndpoints.generate)
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> downloadTemplate({
     @Body() required GenerateReqModel generateReqModel,

@@ -26,6 +26,8 @@ import 'package:union_state/union_state.dart';
 abstract class ITemplateNoAuthScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<TemplateEntity> get templateState;
 
+  UnionStateNotifier<Map<String, String>> get fieldValuesState;
+
   Map<String, String> get fieldValues;
 
   String get title;
@@ -67,10 +69,16 @@ class TemplateNoAuthScreenWidgetModel
 
   final _templateState = UnionStateNotifier<TemplateEntity>.loading();
 
-  final Dio _dio = Dio();
+  final _fieldValuesState = UnionStateNotifier<Map<String, String>>({});
+
+  final Dio _dio = Dio(); // TODO: убрать его отсюда
 
   @override
   UnionStateNotifier<TemplateEntity> get templateState => _templateState;
+
+  @override
+  UnionStateNotifier<Map<String, String>> get fieldValuesState =>
+      _fieldValuesState;
 
   @override
   Map<String, String> get fieldValues => model.fieldValues;
@@ -135,7 +143,7 @@ class TemplateNoAuthScreenWidgetModel
 
   @override
   Future<void> onFillField({required FieldEntity fieldEntity}) async {
-    final value = await stackRouter.push(
+    final value = await stackRouter.root.push(
       createTemplateEditFieldRoute(
         fieldEntity: fieldEntity.copyWith(
           value: model.fieldValues[fieldEntity.name],
@@ -146,6 +154,10 @@ class TemplateNoAuthScreenWidgetModel
     if (value != null && value is String) {
       model.fieldValues[fieldEntity.name] = value;
       // _templateState.content(_templateState.value.data!);
+      final updatedValues = Map<String, String>.from(model.fieldValues);
+
+      _fieldValuesState.content(updatedValues);
+
       log('Fields Map: ${model.fieldValues.toString()}');
     }
   }
@@ -339,8 +351,6 @@ class TemplateNoAuthScreenWidgetModel
 
       final fileBytes = await model.templateService.downloadTemplate(
         generateReqEntity: generateRequest,
-        contentType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       );
 
       final directory = await _getDownloadDirectory();

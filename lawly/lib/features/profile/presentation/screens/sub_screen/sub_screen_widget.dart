@@ -1,14 +1,15 @@
-import 'dart:developer';
-
 import 'package:auto_route/annotations.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
+import 'package:lawly/assets/res/common_icons.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
+import 'package:lawly/features/common/widgets/lawly_custom_button.dart';
 import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
 import 'package:lawly/features/profile/domain/entities/tariff_entity.dart';
 import 'package:lawly/features/profile/presentation/screens/sub_screen/sub_screen_wm.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
 
 @RoutePage()
@@ -62,17 +63,11 @@ class _TariffsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-        top: 50,
-        bottom: 50,
-      ),
-      child: ListView.builder(
-        itemCount: tariffs.length,
-        itemBuilder: (context, index) => _TariffTile(
-          tariff: tariffs[index],
-          onSetTariff: () => onSetTariff(tariffs[index].id),
-        ),
+    return ListView.builder(
+      itemCount: tariffs.length,
+      itemBuilder: (context, index) => _TariffTile(
+        tariff: tariffs[index],
+        onSetTariff: () => onSetTariff(tariffs[index].id),
       ),
     );
   }
@@ -91,12 +86,11 @@ class _TariffTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
 
-    log(
-      'Tariff: ${tariff.name}, Description: ${tariff.description}, Price: ${tariff.price}, Features: ${tariff.id}, ${tariff.features.toString()}',
-    );
-
     return Column(
       children: [
+        const SizedBox(
+          height: 24,
+        ),
         Padding(
           padding: EdgeInsets.symmetric(
             horizontal: mediaQuery.size.width * 0.08,
@@ -114,35 +108,45 @@ class _TariffTile extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                ...tariff.features.map((feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 10.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '•',
-                            style: textBold20DarkBlueW600,
+                ...tariff.features.map(
+                  (feature) => Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '•',
+                          style: textBold20DarkBlueW600,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            feature,
+                            style: textBold20DarkBlueW400,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              feature,
-                              style: textBold20DarkBlueW400,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 Text(
-                  '${tariff.price}₽',
+                  '${tariff.price.toInt()}₽',
                   style: textBold20DarkBlueW800,
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                LawlyCustomButton(
+                  onPressed: onSetTariff,
+                  text: context.l10n.apply,
+                  iconPath: CommonIcons.addIcon,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 0,
+                  ),
+                )
               ],
             ),
           ),
-        ),
-        const SizedBox(
-          height: 24,
         ),
       ],
     );

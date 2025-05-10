@@ -72,6 +72,7 @@ class AppRouter extends RootStackRouter {
             registrationRoute.copyWith(fullscreenDialog: true),
             privacyPolicyRoute.copyWith(fullscreenDialog: true),
             documentEditRoute.copyWith(fullscreenDialog: true),
+            templateEditFieldRoute.copyWith(fullscreenDialog: true),
             CustomRoute(
               initial: !_initService.isFirstLaunch,
               transitionsBuilder: TransitionsBuilders.fadeIn,

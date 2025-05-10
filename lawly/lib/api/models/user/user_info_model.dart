@@ -15,13 +15,13 @@ class UserInfoModel extends UserInfoEntity {
   final String startDate;
 
   @JsonKey(name: 'end_date')
-  final String endDate;
+  final String? endDate;
 
   UserInfoModel({
     required this.userId,
     required this.tariff,
     required this.startDate,
-    required this.endDate,
+    this.endDate,
   }) : super(
           userId: userId,
           tariff: tariff,

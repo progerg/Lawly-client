@@ -11,7 +11,7 @@ UserInfoModel _$UserInfoModelFromJson(Map<String, dynamic> json) =>
       userId: (json['user_id'] as num).toInt(),
       tariff: TariffModel.fromJson(json['tariff'] as Map<String, dynamic>),
       startDate: json['start_date'] as String,
-      endDate: json['end_date'] as String,
+      endDate: json['end_date'] as String?,
     );
 
 Map<String, dynamic> _$UserInfoModelToJson(UserInfoModel instance) =>

@@ -59,11 +59,9 @@ class TemplateService {
 
   Future<List<int>> downloadTemplate({
     required GenerateReqEntity generateReqEntity,
-    required String contentType,
   }) async {
     return await _templateRepository.downloadTemplate(
       generateReqEntity: generateReqEntity,
-      contentType: contentType,
     );
   }
 }

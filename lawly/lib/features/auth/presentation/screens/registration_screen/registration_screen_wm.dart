@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -16,12 +17,14 @@ import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/guards/auth_guard.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 
 abstract class IRegistrationScreenWidgetModel implements IWidgetModel {
   TextEditingController get nameTextController;
   TextEditingController get emailTextController;
   TextEditingController get passwordTextController;
+  TextEditingController get confirmPasswordTextController;
 
   void onCompleteRegistration();
 
@@ -64,6 +67,7 @@ class RegistrationScreenWidgetModel
   final _nameTextController = TextEditingController();
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  final _confirmPasswordTextController = TextEditingController();
 
   bool _isAgreePrivacyPolicy = false;
 
@@ -96,12 +100,12 @@ class RegistrationScreenWidgetModel
       if (error.response?.statusCode == 409) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Пользователь с таким email уже существует',
+          context.l10n.extra_email,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Некорректный email',
+          context.l10n.uncorrect_email,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -110,12 +114,12 @@ class RegistrationScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }
@@ -136,55 +140,79 @@ class RegistrationScreenWidgetModel
   TextEditingController get passwordTextController => _passwordTextController;
 
   @override
+  TextEditingController get confirmPasswordTextController =>
+      _confirmPasswordTextController;
+
+  @override
   Future<void> onCompleteRegistration() async {
     try {
-      if (_nameTextController.text.isNotEmpty &&
-          _emailTextController.text.isNotEmpty &&
-          _passwordTextController.text.isNotEmpty) {
-        if (_isAgreePrivacyPolicy) {
-          final config = Environment<AppConfig>.instance().config;
-
-          final user = AuthorizedUserEntity(
-            name: _nameTextController.text,
-            email: _emailTextController.text,
-            password: _passwordTextController.text,
-            deviceId: config.deviceId,
-            deviceOs: config.deviceOs,
-            deviceName: config.deviceName,
-            agreeToTerms: true,
-          );
-
-          await model.register(entity: user);
-
-          await model.setSubscribe(
-              tariffId: 2); // TODO: заглушка для базового тарифа
-
-          await model.saveUserService.saveAuthUser(entity: user);
-
-          model.authBloc.add(
-            AuthEvent.loggedIn(authorizedUser: user),
-          );
-
-          appRouter.push(
-            switch (model.navBarObserver.currentNavBarElement.value) {
-              NavBarElement.document => DocumentsRouter(),
-              NavBarElement.template => TemplatesRouter(),
-              NavBarElement.chat => ChatRouter(),
-              NavBarElement.profile => ProfileRouter(),
-            },
-          );
-        } else {
-          _scaffoldMessengerWrapper.showSnackBar(
-            context,
-            'Примите условия политики конфиденциальности',
-          );
-        }
-      } else {
+      if (_nameTextController.text.isEmpty ||
+          _emailTextController.text.isEmpty ||
+          _passwordTextController.text.isEmpty ||
+          _confirmPasswordTextController.text.isEmpty) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Заполните все поля',
+          context.l10n.fill_all_fields,
         );
+        return;
       }
+      if (_passwordTextController.text != _confirmPasswordTextController.text) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.passwords_not_equals,
+        );
+        return;
+      }
+      if (!_isAgreePrivacyPolicy) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.confirm_privacy_policy,
+        );
+        return;
+      }
+
+      final config = Environment<AppConfig>.instance().config;
+
+      // log('Config: ${config.deviceId} ${config.deviceOs} ${config.deviceName}');
+
+      final user = AuthorizedUserEntity(
+        name: _nameTextController.text,
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+        deviceId: config.deviceId,
+        deviceOs: config.deviceOs,
+        deviceName: config.deviceName,
+        agreeToTerms: true,
+      );
+
+      await model.register(entity: user);
+
+      final tariffs = await model.getTariffs();
+
+      final tariff = tariffs.firstWhereOrNull(
+        (element) => element.isBase,
+      );
+
+      if (tariff != null) {
+        await model.setSubscribe(
+          tariffId: tariff.id,
+        ); // выбираем базовый тариф при регистрации
+      }
+
+      await model.saveUserService.saveAuthUser(entity: user);
+
+      model.authBloc.add(
+        AuthEvent.loggedIn(authorizedUser: user),
+      );
+
+      appRouter.push(
+        switch (model.navBarObserver.currentNavBarElement.value) {
+          NavBarElement.document => DocumentsRouter(),
+          NavBarElement.template => TemplatesRouter(),
+          NavBarElement.chat => ChatRouter(),
+          NavBarElement.profile => ProfileRouter(),
+        },
+      );
     } on DioException catch (e) {
       log('Error: ${e.response?.statusCode.toString() ?? 'Unknown error'}');
       onErrorHandle(e);

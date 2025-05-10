@@ -22,7 +22,7 @@ class RegistrationScreenWidget
   @override
   Widget build(IRegistrationScreenWidgetModel wm) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: milkyWhite,
@@ -39,6 +39,7 @@ class RegistrationScreenWidget
           nameController: wm.nameTextController,
           emailController: wm.emailTextController,
           passwordController: wm.passwordTextController,
+          confirmPasswordController: wm.confirmPasswordTextController,
         ),
       ),
     );
@@ -52,6 +53,7 @@ class _RegistrationForm extends StatefulWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController confirmPasswordController;
 
   const _RegistrationForm({
     required this.onRegistration,
@@ -60,6 +62,7 @@ class _RegistrationForm extends StatefulWidget {
     required this.nameController,
     required this.emailController,
     required this.passwordController,
+    required this.confirmPasswordController,
   });
 
   @override
@@ -133,6 +136,13 @@ class _RegistrationFormState extends State<_RegistrationForm> {
                     isPassword: true,
                     controller: widget.passwordController,
                     labelText: context.l10n.password_claim,
+                  ),
+                  const SizedBox(height: 24),
+                  AuthTextField(
+                    textAbove: context.l10n.confirm_password,
+                    isPassword: true,
+                    controller: widget.confirmPasswordController,
+                    labelText: context.l10n.confirm_password_claim,
                   ),
                 ],
               ),

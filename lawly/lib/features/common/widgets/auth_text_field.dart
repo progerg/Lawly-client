@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/text_style.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 class AuthTextField extends StatefulWidget {
   final String textAbove;
   final TextEditingController controller;
   final String labelText;
   final bool isPassword;
+  final String? mask;
+  final Map<String, String> filter;
 
   const AuthTextField({
     super.key,
@@ -14,6 +17,8 @@ class AuthTextField extends StatefulWidget {
     required this.controller,
     required this.labelText,
     this.isPassword = false,
+    this.mask,
+    this.filter = const {},
   });
 
   @override
@@ -80,11 +85,23 @@ class _AuthTextFieldState extends State<AuthTextField> {
                       ))
                   : null,
             ),
+            inputFormatters: [
+              MaskTextInputFormatter(
+                mask: widget.mask,
+                filter: _getFilter(widget.filter),
+              ),
+            ],
             style: textBold15DarkBlueW700,
             cursorColor: darkBlue,
           ),
         ),
       ],
     );
+  }
+
+  Map<String, RegExp> _getFilter(Map<String, String> filter) {
+    return filter.map((key, value) {
+      return MapEntry(key, RegExp(value));
+    });
   }
 }

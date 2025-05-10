@@ -96,20 +96,20 @@ class ProfileScreenWidgetModel
     super.onErrorHandle(error);
 
     if (error is DioException) {
-      if (error.response?.statusCode == 403) {
+      if (error.response?.statusCode == 401) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неверные учетные данные',
+          context.l10n.uncorrect_auth_data,
         );
       } else if (error.response?.statusCode == 409) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'У пользователя нет подписки',
+          context.l10n.no_subscription,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Ошибка валидации данных',
+          context.l10n.error_validation_data,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -118,12 +118,12 @@ class ProfileScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }
@@ -141,7 +141,10 @@ class ProfileScreenWidgetModel
 
   @override
   Future<void> onOpenSubs() async {
-    await stackRouter.push(createSubscribeRoute());
+    final newTariff = await stackRouter.push(createSubscribeRoute());
+    if (newTariff != null) {
+      unawaited(_loadUserInfo());
+    }
   }
 
   @override

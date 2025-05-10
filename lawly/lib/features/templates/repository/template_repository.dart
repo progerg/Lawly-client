@@ -9,6 +9,9 @@ import 'package:lawly/features/templates/domain/entity/total_templates_entity.da
 
 const int defaultLimit = 10;
 
+const String contentType =
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
 abstract class ITemplateRepository {
   Future<TotalTemplatesEntity> getTotalTemplates(
       {String? query, int? limit, required int offset});
@@ -31,7 +34,6 @@ abstract class ITemplateRepository {
 
   Future<List<int>> downloadTemplate({
     required GenerateReqEntity generateReqEntity,
-    required String contentType,
   });
 }
 
@@ -101,7 +103,6 @@ class TemplateRepository implements ITemplateRepository {
   @override
   Future<List<int>> downloadTemplate({
     required GenerateReqEntity generateReqEntity,
-    required String contentType,
   }) async {
     return await _generateRemoteDataSource.downloadTemplate(
       generateReqModel: GenerateReqModel.fromEntity(generateReqEntity),

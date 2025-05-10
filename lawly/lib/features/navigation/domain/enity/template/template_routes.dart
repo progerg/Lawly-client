@@ -14,7 +14,7 @@ AutoRoute createTemplateRouter() => AutoRoute(
           path: AppRoutePaths.templatesPath,
         ),
         templateNoAuthRoute,
-        templateEditFieldRoute,
+        // templateEditFieldRoute,
       ],
     );
 
@@ -28,14 +28,15 @@ PageRouteInfo createTemplateEditFieldRoute({
 }) =>
     TemplateEditFieldRoute(fieldEntity: fieldEntity);
 
-final templateNoAuthRoute = AutoRoute(
+final templateNoAuthRoute = CustomRoute(
   page: TemplateNoAuthRoute.page,
   path: TemplateRoutePaths.templateNoAuth,
+  transitionsBuilder: TransitionsBuilders.slideLeft,
 );
 
 final templateEditFieldRoute = CustomRoute(
   page: TemplateEditFieldRoute.page,
   path: TemplateRoutePaths.templateEditField,
-  transitionsBuilder: TransitionsBuilders.slideBottom,
+  transitionsBuilder: TransitionsBuilders.fadeIn,
   opaque: false,
 );

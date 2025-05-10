@@ -8,6 +8,7 @@ class TariffEntity {
   final bool aiAccess;
   final bool customTemplates;
   final bool unlimitedDocs;
+  final bool isBase;
 
   TariffEntity({
     required this.id,
@@ -19,5 +20,6 @@ class TariffEntity {
     required this.aiAccess,
     required this.customTemplates,
     required this.unlimitedDocs,
+    required this.isBase,
   });
 }

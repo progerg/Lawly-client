@@ -4,6 +4,7 @@ import 'package:lawly/features/auth/service/auth_service.dart';
 import 'package:lawly/features/auth/service/save_user_service.dart';
 import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
+import 'package:lawly/features/profile/domain/entities/tariff_entity.dart';
 import 'package:lawly/features/profile/service/subscribe_service.dart';
 
 class RegistrationScreenModel extends ElementaryModel {
@@ -31,4 +32,8 @@ class RegistrationScreenModel extends ElementaryModel {
     required int tariffId,
   }) =>
       _subscribeService.setSubscribe(tariffId: tariffId);
+
+  Future<List<TariffEntity>> getTariffs() async {
+    return await _subscribeService.getTariffs();
+  }
 }

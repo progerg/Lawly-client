@@ -7,11 +7,12 @@ import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
 import 'package:lawly/features/common/widgets/lawly_custom_button.dart';
 import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
+import 'package:lawly/features/common/widgets/unfocus_gesture_detector.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_wm.dart';
-import 'package:retrofit/http.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
 
 @RoutePage()
@@ -50,12 +51,19 @@ class TemplateNoAuthScreenWidget
       body: UnionStateListenableBuilder<TemplateEntity>(
           unionStateListenable: wm.templateState,
           builder: (context, data) {
-            return _TemplateCard(
-              fieldValues: wm.fieldValues,
-              onCreateDocument: wm.onCreateDocument,
-              onFillField: wm.onFillField,
-              isAuthorized: wm.isAuthorized,
-              template: data,
+            return UnionStateListenableBuilder<Map<String, String>>(
+              unionStateListenable: wm.fieldValuesState,
+              builder: (context, fieldsValues) => UnfocusGestureDetector(
+                child: _TemplateCard(
+                  fieldValues: fieldsValues,
+                  onCreateDocument: wm.onCreateDocument,
+                  onFillField: wm.onFillField,
+                  isAuthorized: wm.isAuthorized,
+                  template: data,
+                ),
+              ),
+              loadingBuilder: (context, data) => LawlyCircularIndicator(),
+              failureBuilder: (context, e, data) => LawlyErrorConnection(),
             );
           },
           loadingBuilder: (context, data) {
@@ -166,7 +174,7 @@ class _TemplateCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 LawlyCustomButton(
                   onPressed: () => onCreateDocument(template: template),
-                  text: 'Сгенерировать',
+                  text: context.l10n.generate,
                   iconPath: CommonIcons.duoArrowIcon,
                   padding: EdgeInsets.symmetric(
                     horizontal: mediaQuery.size.width * 0.1,
@@ -282,11 +290,22 @@ class _CustomFieldsSectionState extends State<_CustomFieldsSection> {
                     // Верхняя плитка
                     if (columnIndex * 2 < widget.fields.length)
                       Expanded(
-                        child: _TileItem(
+                        // child: _TileItem(
+                        //   title: widget.fields[columnIndex * 2].nameRu ??
+                        //       widget.fields[columnIndex * 2].name,
+                        //   isSelected:
+                        //       isHasValue(widget.fields[columnIndex * 2]),
+                        //   onTap: () => setState(() {
+                        //     widget.onFillField(
+                        //       fieldEntity: widget.fields[columnIndex * 2],
+                        //     );
+                        //   }),
+                        // ),
+                        child: _FieldTileItem(
                           title: widget.fields[columnIndex * 2].nameRu ??
                               widget.fields[columnIndex * 2].name,
-                          isSelected:
-                              isHasValue(widget.fields[columnIndex * 2]),
+                          fieldValues: widget.fieldValues,
+                          field: widget.fields[columnIndex * 2],
                           onTap: () => setState(() {
                             widget.onFillField(
                               fieldEntity: widget.fields[columnIndex * 2],
@@ -298,17 +317,29 @@ class _CustomFieldsSectionState extends State<_CustomFieldsSection> {
                     // Нижняя плитка (если есть)
                     if (columnIndex * 2 + 1 < widget.fields.length)
                       Expanded(
-                        child: _TileItem(
+                        // child: _TileItem(
+                        //   title: widget.fields[columnIndex * 2 + 1].nameRu ??
+                        //       widget.fields[columnIndex * 2 + 1].name,
+                        //   isSelected:
+                        //       isHasValue(widget.fields[columnIndex * 2 + 1]),
+                        //   onTap: () {
+                        //     setState(() {
+                        //       widget.onFillField(
+                        //         fieldEntity: widget.fields[columnIndex * 2 + 1],
+                        //       );
+                        //     });
+                        //   },
+                        // ),
+                        child: _FieldTileItem(
                           title: widget.fields[columnIndex * 2 + 1].nameRu ??
                               widget.fields[columnIndex * 2 + 1].name,
-                          isSelected:
-                              isHasValue(widget.fields[columnIndex * 2 + 1]),
-                          onTap: () {
+                          fieldValues: widget.fieldValues,
+                          field: widget.fields[columnIndex * 2 + 1],
+                          onTap: () => setState(() {
                             widget.onFillField(
                               fieldEntity: widget.fields[columnIndex * 2 + 1],
                             );
-                            setState(() {});
-                          },
+                          }),
                         ),
                       ),
                   ],
@@ -318,6 +349,106 @@ class _CustomFieldsSectionState extends State<_CustomFieldsSection> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// class _FieldTileItem extends StatefulWidget {
+//   final String title;
+//   final VoidCallback onTap;
+//   final Map<String, String> fieldValues;
+//   final FieldEntity field;
+
+//   const _FieldTileItem({
+//     required this.title,
+//     required this.onTap,
+//     required this.fieldValues,
+//     required this.field,
+//   });
+
+//   @override
+//   State<_FieldTileItem> createState() => _FieldTileItemState();
+// }
+
+// class _FieldTileItemState extends State<_FieldTileItem> {
+//   bool isSelected = false;
+
+//   bool isHasValue(FieldEntity field) =>
+//       widget.fieldValues.containsKey(field.name) &&
+//       widget.fieldValues[field.name]!.isNotEmpty;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     isSelected = isHasValue(widget.field);
+//   }
+class _FieldTileItem extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+  final Map<String, String> fieldValues;
+  final FieldEntity field;
+
+  const _FieldTileItem({
+    required this.title,
+    required this.onTap,
+    required this.fieldValues,
+    required this.field,
+  });
+
+  bool isSelected() =>
+      fieldValues.containsKey(field.name) &&
+      fieldValues[field.name]!.isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          width: 140,
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: const Color(0xFF383B53),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (isSelected())
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
