@@ -351,8 +351,6 @@ class TemplateNoAuthScreenWidgetModel
 
       final fileBytes = await model.templateService.downloadTemplate(
         generateReqEntity: generateRequest,
-        contentType:
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       );
 
       final directory = await _getDownloadDirectory();

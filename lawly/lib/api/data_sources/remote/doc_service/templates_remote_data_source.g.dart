@@ -27,7 +27,7 @@ class _TemplatesRemoteDataSource implements TemplatesRemoteDataSource {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/v1/documents',
+            '/api/v1/documents/documents',
             queryParameters: queryParameters,
             data: _data,
           )
@@ -92,7 +92,7 @@ class _TemplatesRemoteDataSource implements TemplatesRemoteDataSource {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/api/v1/templates',
+            '/api/v1/templates/templates',
             queryParameters: queryParameters,
             data: _data,
           )

@@ -203,7 +203,10 @@ class _ProfileView extends StatelessWidget {
                                 ),
                               ),
                             UserInfoStatus.success => Text(
-                                userInfo!.tariff.name,
+                                _buildSubscriptionStatusText(
+                                  context,
+                                  userInfo!,
+                                ),
                                 style: textBold15DarkBlueW400,
                               ),
                           }
@@ -243,6 +246,32 @@ class _ProfileView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _buildSubscriptionStatusText(
+      BuildContext context, UserInfoEntity userInfo) {
+    final stringBuilder = StringBuffer();
+    stringBuilder.writeln(context.l10n.sub_activate);
+    if (userInfo.endDate != null) {
+      final daysLeft = _countDaysLeft(userInfo.endDate!);
+      stringBuilder.write(daysLeft);
+      stringBuilder.write(' ');
+      stringBuilder.writeln(context.l10n.day_left_count(daysLeft));
+    } else {
+      stringBuilder.writeln(context.l10n.unlimit);
+    }
+    stringBuilder.write(userInfo.tariff.name);
+    return stringBuilder.toString();
+  }
+
+  int _countDaysLeft(String endDateString) {
+    final now = DateTime.now();
+
+    final endDate = DateTime.parse(endDateString);
+
+    final difference = endDate.difference(now).inDays;
+
+    return difference < 0 ? 0 : difference;
   }
 }
 

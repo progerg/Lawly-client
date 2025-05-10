@@ -9,6 +9,7 @@ part of 'tariff_model.dart';
 TariffModel _$TariffModelFromJson(Map<String, dynamic> json) => TariffModel(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
+      isBase: json['is_base'] as bool,
       description: json['description'] as String? ?? _defaultDescription,
       features: (json['features'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -34,4 +35,5 @@ Map<String, dynamic> _$TariffModelToJson(TariffModel instance) =>
       'ai_access': instance.aiAccess,
       'custom_templates': instance.customTemplates,
       'unlimited_docs': instance.unlimitedDocs,
+      'is_base': instance.isBase,
     };

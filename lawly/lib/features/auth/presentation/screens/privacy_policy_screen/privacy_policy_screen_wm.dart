@@ -10,6 +10,7 @@ import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_model.dart';
 import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/privacy_policy_screen_widget.dart';
 import 'package:lawly/features/navigation/service/router.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:union_state/union_state.dart';
 
@@ -65,7 +66,7 @@ class PrivacyPolicyScreenWidgetModel
             error.error is SocketException)) {
       _scaffoldMessengerWrapper.showSnackBar(
         context,
-        'Проблемы с подключением к интернету',
+        context.l10n.error_connection_problems,
       );
     }
   }

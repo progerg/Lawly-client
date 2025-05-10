@@ -5,6 +5,8 @@ import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/features/common/widgets/unfocus_gesture_detector.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/template_edit_field_screen/template_edit_field_screen_wm.dart';
+import 'package:lawly/l10n/l10n.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 @RoutePage()
 class TemplateEditFieldScreenWidget
@@ -77,8 +79,8 @@ class _EditFieldView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Заголовок
-                  const Text(
-                    'Введите текст',
+                  Text(
+                    fieldEntity.nameRu ?? fieldEntity.name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -100,14 +102,23 @@ class _EditFieldView extends StatelessWidget {
                       controller: controller,
                       maxLines: null, // Многострочный ввод
                       expands: true,
+                      inputFormatters: [
+                        MaskTextInputFormatter(
+                          mask: fieldEntity.mask,
+                          filter: fieldEntity.filterField?.map(
+                            (key, value) => MapEntry(key, RegExp(value)),
+                          ),
+                        ),
+                      ],
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black87,
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText:
-                            'Введите ${fieldEntity.nameRu ?? fieldEntity.name}',
+                        hintText: fieldEntity.example != null
+                            ? '${context.l10n.for_example}, ${fieldEntity.example}'
+                            : '${context.l10n.enter_smth} ${fieldEntity.nameRu ?? fieldEntity.name}',
                         hintStyle: TextStyle(
                           color: Colors.black54,
                         ),

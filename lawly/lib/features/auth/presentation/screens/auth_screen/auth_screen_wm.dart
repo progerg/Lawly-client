@@ -82,12 +82,12 @@ class AuthScreenWidgetModel
       if (error.response?.statusCode == 401) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неверные учетные данные',
+          context.l10n.uncorrect_auth_data,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Некорректный email',
+          context.l10n.uncorrect_email,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -96,12 +96,12 @@ class AuthScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }
@@ -119,12 +119,6 @@ class AuthScreenWidgetModel
       if (_emailController.text.isNotEmpty &&
           _passwordController.text.isNotEmpty) {
         final config = Environment<AppConfig>.instance().config;
-
-        // TODO: потом добавить сохранение в SP после успешной регистрации
-        // final user = model.authBloc.state.authorizedUserOrNull?.copyWith(
-        //   email: _emailController.text,
-        //   password: _passwordController.text,
-        // );
 
         final localUser = model.saveUserService.getAuthUser();
 
@@ -164,7 +158,7 @@ class AuthScreenWidgetModel
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Заполните все поля',
+          context.l10n.fill_all_fields,
         );
       }
     } on DioException catch (e) {

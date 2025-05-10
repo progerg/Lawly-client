@@ -70,38 +70,18 @@ class DocumentEditScreenWidgetModel
   }
 
   Future<void> _loadFields() async {
-    // final remoteDocument = widget.document;
     final localDocuments = model.saveUserService.getPersonalDocuments();
     final localDocument = localDocuments
         .where(
           (element) => element.id == widget.document.id,
         )
         .firstOrNull;
-    // _fieldsState.loading(localDocument?.fields ?? []);
+
     try {
       final remoteDocument = await model.getPersonalDocumentById(
         id: widget.document.id,
       );
-      // await Future.value(
-      //   DocEntity(
-      //     id: 1,
-      //     name: 'passport',
-      //     nameRu: 'паспорт',
-      //     description: 'описание',
-      //     fields: [
-      //       FieldEntity(
-      //         id: 1,
-      //         name: 'серия',
-      //         type: 'text',
-      //       ),
-      //       FieldEntity(
-      //         id: 2,
-      //         name: 'номер',
-      //         type: 'text',
-      //       ),
-      //     ],
-      //   ),
-      // );
+
       if (localDocument != null && localDocument.fields != null) {
         final localFields = {
           for (var field in localDocument.fields!) field.id: field,
@@ -113,7 +93,7 @@ class DocumentEditScreenWidgetModel
           }
           return remoteField;
         }).toList();
-        log('Merged fields: ${mergedFields?.first.name}');
+
         _fieldsState.content(mergedFields ?? []);
       } else {
         _fieldsState.content(remoteDocument.fields ?? []);

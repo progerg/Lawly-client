@@ -11,5 +11,9 @@ class CommonIcons {
 
   static const String duoArrowIcon = '$_basePath/duo_arrow.svg';
 
+  static const String documentIcon = '$_basePath/document.svg';
+
+  static const String chevronRightIcon = '$_basePath/chevron_right.svg';
+
   static const String _basePath = 'assets/icons/common';
 }

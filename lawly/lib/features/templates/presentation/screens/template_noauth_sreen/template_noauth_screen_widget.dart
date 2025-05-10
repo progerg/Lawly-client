@@ -12,7 +12,7 @@ import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_wm.dart';
-import 'package:retrofit/http.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
 
 @RoutePage()
@@ -174,7 +174,7 @@ class _TemplateCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 LawlyCustomButton(
                   onPressed: () => onCreateDocument(template: template),
-                  text: 'Сгенерировать',
+                  text: context.l10n.generate,
                   iconPath: CommonIcons.duoArrowIcon,
                   padding: EdgeInsets.symmetric(
                     horizontal: mediaQuery.size.width * 0.1,

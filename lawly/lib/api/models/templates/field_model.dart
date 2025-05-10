@@ -8,14 +8,25 @@ class FieldModel extends FieldEntity {
   @JsonKey(name: 'name_ru')
   final String? nameRu;
 
+  @JsonKey(name: 'can_improve_ai')
+  final bool canImproveAi;
+
+  @JsonKey(name: 'filter_field')
+  final Map<String, String>? filterField;
+
   FieldModel({
     required super.id,
     required super.name,
-    required super.type,
+    required this.canImproveAi,
+    super.example,
+    super.mask,
     this.nameRu,
+    this.filterField,
     super.value,
   }) : super(
           nameRu: nameRu,
+          filterField: filterField,
+          canImproveAi: canImproveAi,
         );
 
   factory FieldModel.fromJson(Map<String, dynamic> json) =>
@@ -28,7 +39,10 @@ class FieldModel extends FieldEntity {
       id: entity.id,
       name: entity.name,
       nameRu: entity.nameRu,
-      type: entity.type,
+      mask: entity.mask,
+      example: entity.example,
+      filterField: entity.filterField,
+      canImproveAi: entity.canImproveAi,
       value: entity.value,
     );
   }

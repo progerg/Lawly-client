@@ -33,9 +33,13 @@ class TariffModel extends TariffEntity {
   @JsonKey(name: 'unlimited_docs')
   final bool unlimitedDocs;
 
+  @JsonKey(name: 'is_base')
+  final bool isBase;
+
   TariffModel({
     required super.id,
     required super.name,
+    required this.isBase,
     this.description = _defaultDescription,
     this.features = _defaultFeatures,
     required super.price,
@@ -50,6 +54,7 @@ class TariffModel extends TariffEntity {
           aiAccess: aiAccess,
           customTemplates: customTemplates,
           unlimitedDocs: unlimitedDocs,
+          isBase: isBase,
         );
 
   factory TariffModel.fromJson(Map<String, dynamic> json) =>

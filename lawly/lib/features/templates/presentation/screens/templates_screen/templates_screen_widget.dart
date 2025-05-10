@@ -7,6 +7,7 @@ import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
 import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_wm.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
 
 @RoutePage()
@@ -32,16 +33,15 @@ class TemplatesScreenWidget
           unionStateListenable: wm.templatesState,
           builder: (context, data) {
             return _TemplatesView(
-                onTemplateTap: wm.onTemplateTap, templates: data);
+              canCreateCustomTemplates: false,
+              onTemplateTap: wm.onTemplateTap,
+              templates: data,
+            );
           },
           loadingBuilder: (context, data) {
-            // return _TemplatesView(
-            //     onTemplateTap: wm.onTemplateTap, templates: data ?? []);
             return LawlyCircularIndicator();
           },
           failureBuilder: (context, e, data) {
-            // return _TemplatesView(
-            //     onTemplateTap: wm.onTemplateTap, templates: data ?? []);
             return LawlyErrorConnection();
           }),
     );
@@ -51,10 +51,12 @@ class TemplatesScreenWidget
 class _TemplatesView extends StatelessWidget {
   final void Function(TemplateEntity) onTemplateTap;
   final List<TemplateEntity> templates;
+  final bool canCreateCustomTemplates;
 
   const _TemplatesView({
     required this.templates,
     required this.onTemplateTap,
+    required this.canCreateCustomTemplates,
   });
 
   @override
@@ -67,9 +69,16 @@ class _TemplatesView extends StatelessWidget {
         mainAxisSpacing: 16, // Вертикальный отступ между строками
         childAspectRatio: 0.75, // Соотношение сторон карточки
       ),
-      itemCount: templates.length,
+      itemCount:
+          canCreateCustomTemplates ? templates.length + 1 : templates.length,
       itemBuilder: (context, index) {
-        final template = templates[index];
+        if (canCreateCustomTemplates && index == 0) {
+          // TODO: Виджет для создания кастомного шаблона
+        }
+
+        final templateIndex = canCreateCustomTemplates ? index - 1 : index;
+        final template = templates[templateIndex];
+
         return _TemplateCard(
           template: template,
           onTemplateTap: () => onTemplateTap(template),
@@ -138,7 +147,7 @@ class _TemplateCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Скачать',
+                        context.l10n.download,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[500],

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -16,6 +17,7 @@ import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/navigation/service/guards/auth_guard.dart';
 import 'package:lawly/features/navigation/service/observers/nav_bar_observer.dart';
 import 'package:lawly/features/navigation/service/router.dart';
+import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 
 abstract class IRegistrationScreenWidgetModel implements IWidgetModel {
@@ -98,12 +100,12 @@ class RegistrationScreenWidgetModel
       if (error.response?.statusCode == 409) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Пользователь с таким email уже существует',
+          context.l10n.extra_email,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Некорректный email',
+          context.l10n.uncorrect_email,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -112,12 +114,12 @@ class RegistrationScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }
@@ -150,26 +152,28 @@ class RegistrationScreenWidgetModel
           _confirmPasswordTextController.text.isEmpty) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Заполните все поля',
+          context.l10n.fill_all_fields,
         );
         return;
       }
       if (_passwordTextController.text != _confirmPasswordTextController.text) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Пароли не совпадают',
+          context.l10n.passwords_not_equals,
         );
         return;
       }
       if (!_isAgreePrivacyPolicy) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Примите условия политики конфиденциальности',
+          context.l10n.confirm_privacy_policy,
         );
         return;
       }
 
       final config = Environment<AppConfig>.instance().config;
+
+      // log('Config: ${config.deviceId} ${config.deviceOs} ${config.deviceName}');
 
       final user = AuthorizedUserEntity(
         name: _nameTextController.text,
@@ -183,8 +187,17 @@ class RegistrationScreenWidgetModel
 
       await model.register(entity: user);
 
-      await model.setSubscribe(
-          tariffId: 2); // TODO: заглушка для базового тарифа
+      final tariffs = await model.getTariffs();
+
+      final tariff = tariffs.firstWhereOrNull(
+        (element) => element.isBase,
+      );
+
+      if (tariff != null) {
+        await model.setSubscribe(
+          tariffId: tariff.id,
+        ); // выбираем базовый тариф при регистрации
+      }
 
       await model.saveUserService.saveAuthUser(entity: user);
 

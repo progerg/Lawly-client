@@ -91,44 +91,6 @@ class DocumentsScreenWidgetModel
     _documentsState.loading(localDocuments);
     try {
       final remoteDocuments = await model.getPersonalDocuments();
-      // await Future.value([
-      //   DocEntity(
-      //     id: 1,
-      //     name: 'passport',
-      //     nameRu: 'паспорт',
-      //     description: 'описание',
-      //     // fields: [
-      //     //   FieldEntity(
-      //     //     id: 1,
-      //     //     name: 'серия',
-      //     //     type: 'text',
-      //     //   ),
-      //     //   FieldEntity(
-      //     //     id: 2,
-      //     //     name: 'номер',
-      //     //     type: 'text',
-      //     //   ),
-      //     // ],
-      //   ),
-      //   DocEntity(
-      //     id: 2,
-      //     name: 'snils',
-      //     nameRu: 'СНИЛС',
-      //     description: 'описание',
-      //     // fields: [
-      //     //   FieldEntity(
-      //     //     id: 1,
-      //     //     name: 'код',
-      //     //     type: 'text',
-      //     //   ),
-      //     //   FieldEntity(
-      //     //     id: 2,
-      //     //     name: 'фио',
-      //     //     type: 'text',
-      //     //   ),
-      //     // ],
-      //   ),
-      // ]);
 
       final localDocsMap = {for (var doc in localDocuments) doc.id: doc};
 
@@ -145,15 +107,5 @@ class DocumentsScreenWidgetModel
     } on Exception catch (e) {
       _documentsState.failure(e, localDocuments);
     }
-
-    // await model.saveUserService.savePersonalDocuments(
-    //   documents: list,
-    // );
-
-    // final documents = model.saveUserService.getPersonalDocuments();
-
-    // for (var doc in documents) {
-    //   log('${doc.id} ${doc.name} ${doc.nameRu} ${doc.description} ${doc.fields.first.id} ${doc.fields.first.name} ${doc.fields.first.type}');
-    // }
   }
 }
