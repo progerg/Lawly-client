@@ -17,6 +17,14 @@ const textBold15DarkBlueW400 = TextStyle(
   letterSpacing: 0,
 );
 
+const textBold16DarkBlueW400 = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w400,
+  fontStyle: FontStyle.normal,
+  color: darkBlue,
+  letterSpacing: 0,
+);
+
 const textBold20DarkBlueW400 = TextStyle(
   fontSize: 20,
   fontWeight: FontWeight.w400,

@@ -9,6 +9,7 @@ import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen_model.dart';
 import 'package:lawly/features/auth/presentation/screens/auth_screen/auth_screen_widget.dart';
@@ -33,7 +34,9 @@ AuthScreenWidgetModel defaultAuthScreenWidgetModelFactory(
   final appScope = context.read<IAppScope>();
   final model = AuthScreenModel(
     authService: appScope.authService,
+    subscribeService: appScope.subscribeService,
     authBloc: appScope.authBloc,
+    subBloc: appScope.subBloc,
     navBarObserver: appScope.navBarObserver,
     saveUserService: appScope.saveUserService,
   );
@@ -83,6 +86,11 @@ class AuthScreenWidgetModel
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           context.l10n.uncorrect_auth_data,
+        );
+      } else if (error.response?.statusCode == 404) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.no_sub,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
@@ -145,6 +153,12 @@ class AuthScreenWidgetModel
 
         model.authBloc.add(
           AuthEvent.loggedIn(authorizedUser: user),
+        );
+
+        final currentSubscribe = await model.getSubscribe();
+
+        model.subBloc.add(
+          SubEvent.setSub(subscribeEntity: currentSubscribe),
         );
 
         appRouter.push(

@@ -5,6 +5,7 @@ class DocEntity {
   final String name;
   final String nameRu;
   final String? link;
+  final bool isPersonal;
   final String description;
   final List<FieldEntity>? fields;
 
@@ -12,6 +13,7 @@ class DocEntity {
     required this.id,
     required this.name,
     required this.nameRu,
+    required this.isPersonal,
     required this.description,
     this.fields,
     this.link,
@@ -22,6 +24,7 @@ class DocEntity {
     String? name,
     String? nameRu,
     String? link,
+    bool? isPersonal,
     String? description,
     List<FieldEntity>? fields,
   }) {
@@ -30,6 +33,7 @@ class DocEntity {
       name: name ?? this.name,
       nameRu: nameRu ?? this.nameRu,
       link: link ?? this.link,
+      isPersonal: isPersonal ?? this.isPersonal,
       description: description ?? this.description,
       fields: fields ?? this.fields,
     );

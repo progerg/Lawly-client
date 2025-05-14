@@ -64,4 +64,12 @@ class TemplateService {
       generateReqEntity: generateReqEntity,
     );
   }
+
+  Future<List<int>> downloadEmptyTemplate({
+    required int templateId,
+  }) async {
+    return await _templateRepository.downloadEmptyTemplate(
+      templateId: templateId,
+    );
+  }
 }

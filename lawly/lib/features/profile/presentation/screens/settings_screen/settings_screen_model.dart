@@ -1,15 +1,18 @@
 import 'package:elementary/elementary.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/auth/service/auth_service.dart';
 
 class SettingsScreenModel extends ElementaryModel {
   final AuthBloc authBloc;
+  final SubBloc subBloc;
   final TokenLocalDataSource tokenLocalDataSource;
   final AuthService _authService;
 
   SettingsScreenModel({
     required this.authBloc,
+    required this.subBloc,
     required this.tokenLocalDataSource,
     required AuthService authService,
   }) : _authService = authService;

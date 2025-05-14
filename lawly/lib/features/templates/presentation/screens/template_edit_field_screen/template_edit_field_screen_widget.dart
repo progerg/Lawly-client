@@ -128,26 +128,27 @@ class _EditFieldView extends StatelessWidget {
 
                   const SizedBox(height: 20),
 
-                  // Кнопка "Сгенерировать"
-                  Center(
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ElevatedButton(
-                        onPressed: onEnter,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF383B53),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                  Expanded(
+                    child: Center(
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: ElevatedButton(
+                          onPressed: onEnter,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            foregroundColor: const Color(0xFF383B53),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            elevation: 0,
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Ввести',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                          child: Text(
+                            context.l10n.enter_and_next,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),
@@ -160,8 +161,8 @@ class _EditFieldView extends StatelessWidget {
                   Center(
                     child: TextButton(
                       onPressed: onBack,
-                      child: const Text(
-                        'Назад',
+                      child: Text(
+                        context.l10n.back,
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 14,

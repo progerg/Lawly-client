@@ -18,5 +18,8 @@ class TemplatesEndpoints {
   static const String documentUpdate =
       '$_baseUrl/documents/update/{document_creation_id}';
 
+  static const String downloadEmptyTemplate =
+      '$_baseUrl/templates/download-empty-template';
+
   static const String generate = '$_baseUrl/documents/generate';
 }

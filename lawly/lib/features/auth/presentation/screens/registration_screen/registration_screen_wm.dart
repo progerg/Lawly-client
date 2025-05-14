@@ -10,6 +10,7 @@ import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_model.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_widget.dart';
@@ -43,6 +44,7 @@ RegistrationScreenWidgetModel defaultRegistrationScreenWidgetModelFactory(
     navBarObserver: appScope.navBarObserver,
     authService: appScope.authService,
     authBloc: appScope.authBloc,
+    subBloc: appScope.subBloc,
     saveUserService: appScope.saveUserService,
     subscribeService: appScope.subscribeService,
   );
@@ -97,7 +99,12 @@ class RegistrationScreenWidgetModel
     super.onErrorHandle(error);
 
     if (error is DioException) {
-      if (error.response?.statusCode == 409) {
+      if (error.response?.statusCode == 404) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.no_sub,
+        );
+      } else if (error.response?.statusCode == 409) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           context.l10n.extra_email,
@@ -187,22 +194,29 @@ class RegistrationScreenWidgetModel
 
       await model.register(entity: user);
 
-      final tariffs = await model.getTariffs();
+      /// Блок с оформлением базовой подписки (НЕАКУТАЛЬНО)
 
-      final tariff = tariffs.firstWhereOrNull(
-        (element) => element.isBase,
-      );
-
-      if (tariff != null) {
-        await model.setSubscribe(
-          tariffId: tariff.id,
-        ); // выбираем базовый тариф при регистрации
-      }
+      // final tariffs = await model.getTariffs();
+      // final tariff = tariffs.firstWhereOrNull(
+      //   (element) => element.isBase,
+      // );
+      // if (tariff != null) {
+      //   await model.setSubscribe(
+      //     tariffId: tariff.id,
+      //   ); // выбираем базовый тариф при регистрации
+      // }
 
       await model.saveUserService.saveAuthUser(entity: user);
 
       model.authBloc.add(
         AuthEvent.loggedIn(authorizedUser: user),
+      );
+
+      // Получаем актуальную подписку
+      final currentSubscribe = await model.getSubscribe();
+
+      model.subBloc.add(
+        SubEvent.setSub(subscribeEntity: currentSubscribe),
       );
 
       appRouter.push(

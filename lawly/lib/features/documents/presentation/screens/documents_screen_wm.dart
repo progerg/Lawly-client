@@ -92,9 +92,13 @@ class DocumentsScreenWidgetModel
     try {
       final remoteDocuments = await model.getPersonalDocuments();
 
+      // TODO: выбрать через where() чтобы только добавлялись персональные (isPersonal = true)
+      final remotePersonalDocuments =
+          remoteDocuments.where((doc) => doc.isPersonal).toList();
+
       final localDocsMap = {for (var doc in localDocuments) doc.id: doc};
 
-      final mergedDocuments = remoteDocuments.map((remoteDoc) {
+      final mergedDocuments = remotePersonalDocuments.map((remoteDoc) {
         // Если документ есть локально - возвращаем его, иначе - документ с бэкенда
         return localDocsMap[remoteDoc.id] ?? remoteDoc;
       }).toList();

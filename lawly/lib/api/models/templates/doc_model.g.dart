@@ -11,6 +11,7 @@ DocModel _$DocModelFromJson(Map<String, dynamic> json) => DocModel(
       name: json['name'] as String,
       nameRu: json['name_ru'] as String,
       description: json['description'] as String,
+      isPersonal: json['is_personal'] as bool,
       fields: (json['fields'] as List<dynamic>?)
           ?.map((e) => FieldModel.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -24,4 +25,5 @@ Map<String, dynamic> _$DocModelToJson(DocModel instance) => <String, dynamic>{
       'description': instance.description,
       'name_ru': instance.nameRu,
       'fields': instance.fields,
+      'is_personal': instance.isPersonal,
     };

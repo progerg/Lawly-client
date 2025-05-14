@@ -7,6 +7,7 @@ import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_sour
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 
 class AuthInterceptor extends Interceptor {
@@ -14,6 +15,7 @@ class AuthInterceptor extends Interceptor {
   final AuthRemoteDataSource _authRemoteDataSource;
   final TokenLocalDataSource _tokenLocalDataSource;
   final AuthBloc _authBloc;
+  final SubBloc _subBloc;
   final AppRouter _appRouter;
 
   bool _isTokenRefresh = false;
@@ -25,11 +27,13 @@ class AuthInterceptor extends Interceptor {
     required AuthRemoteDataSource authRemoteDataSource,
     required TokenLocalDataSource tokenLocalDataSource,
     required AuthBloc authBloc,
+    required SubBloc subBloc,
     required AppRouter appRouter,
   })  : _dio = dio,
         _authRemoteDataSource = authRemoteDataSource,
         _tokenLocalDataSource = tokenLocalDataSource,
         _authBloc = authBloc,
+        _subBloc = subBloc,
         _appRouter = appRouter;
 
   @override
@@ -131,6 +135,9 @@ class AuthInterceptor extends Interceptor {
     await _tokenLocalDataSource.clearTokens();
 
     _authBloc.add(AuthEvent.loggedOut());
+
+    _subBloc.add(SubEvent.removeSub());
+
     _appRouter.push(const ProfileRouter());
     log('Logout');
   }

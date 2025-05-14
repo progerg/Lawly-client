@@ -64,5 +64,13 @@
   "no_expire_subscription": "Подписка на тариф еще не истекла!",
   "day_left_count": "{count, plural, zero{дней} one{день} few{дня} many{дней} other{дней}}",
   "unlimit": "Навсегда",
-  "for_example": "Например"
+  "for_example": "Например",
+  "add_custom_template": "Добавить свой шаблон",
+  "enter_template_name": "Введите название шаблона",
+  "enter_and_next": "Ввести и перейти к следующему",
+  "back": "Назад",
+  "template_not_found": "Шаблон не найден",
+  "fields_of_doc": "Поля документа",
+  "needed_docs": "Необходимые документы",
+  "error_download_template": "Ошибка скачивания шаблона"
 }

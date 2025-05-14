@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:lawly/api/endpoints/user_service/subscribe_endpoints.dart';
+import 'package:lawly/api/models/user/subscribe_model.dart';
 import 'package:lawly/api/models/user/tariff_model.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -17,4 +18,7 @@ abstract class SubscribeRemoteDataSource {
   Future<void> setSubscribe({
     @Field('tariff_id') required int tariffId,
   });
+
+  @GET(SubscribeEndpoints.subscribe)
+  Future<SubscribeModel> getSubscribe();
 }

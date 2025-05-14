@@ -15,5 +15,15 @@ class CommonIcons {
 
   static const String chevronRightIcon = '$_basePath/chevron_right.svg';
 
+  static const String addBorderedIcon = '$_basePath/add_bordered.svg';
+
+  static const String bookmarkIcon = '$_basePath/bookmark.svg';
+
+  static const String downloadIcon = '$_basePath/download.svg';
+
+  static const String checkboxEmptyIcon = '$_basePath/border_square.svg';
+
+  static const String checkboxIcon = '$_basePath/checkbox.svg';
+
   static const String _basePath = 'assets/icons/common';
 }

@@ -117,11 +117,6 @@ class _DocEditViewState extends State<_DocEditView> {
                     textAbove: field.nameRu ?? field.name,
                     controller: _controllers[field.id]!,
                     labelText: field.example ?? '',
-                    // mask: '#### ###### &&',
-                    // filter: {
-                    //   '#': '[0-9]',
-                    //   '&': '[a-zA-Z]',
-                    // },
                     mask: field.mask,
                     filter: field.filterField ?? {},
                   ),
