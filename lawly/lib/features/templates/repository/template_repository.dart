@@ -7,7 +7,7 @@ import 'package:lawly/features/templates/domain/entity/template_download_entity.
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/domain/entity/total_templates_entity.dart';
 
-const int defaultLimit = 10;
+const int defaultLimit = 30;
 
 const String contentType =
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
@@ -34,6 +34,10 @@ abstract class ITemplateRepository {
 
   Future<List<int>> downloadTemplate({
     required GenerateReqEntity generateReqEntity,
+  });
+
+  Future<List<int>> downloadEmptyTemplate({
+    required int templateId,
   });
 }
 
@@ -106,6 +110,16 @@ class TemplateRepository implements ITemplateRepository {
   }) async {
     return await _generateRemoteDataSource.downloadTemplate(
       generateReqModel: GenerateReqModel.fromEntity(generateReqEntity),
+      contentType: contentType,
+    );
+  }
+
+  @override
+  Future<List<int>> downloadEmptyTemplate({
+    required int templateId,
+  }) async {
+    return await _templatesRemoteDataSource.downloadEmptyTemplate(
+      templateId: templateId,
       contentType: contentType,
     );
   }

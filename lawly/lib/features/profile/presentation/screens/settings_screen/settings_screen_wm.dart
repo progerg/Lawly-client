@@ -9,6 +9,7 @@ import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 import 'package:lawly/features/profile/presentation/screens/settings_screen/settings_screen_model.dart';
@@ -29,6 +30,7 @@ SettingsScreenWidgetModel defaultSettingsScreenWidgetModelFactory(
   final appScope = context.read<IAppScope>();
   final model = SettingsScreenModel(
     authBloc: appScope.authBloc,
+    subBloc: appScope.subBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
     authService: appScope.authService,
   );
@@ -100,6 +102,8 @@ class SettingsScreenWidgetModel
       await model.tokenLocalDataSource.clearTokens();
 
       model.authBloc.add(AuthEvent.loggedOut());
+
+      model.subBloc.add(SubEvent.removeSub());
 
       appRouter.push(const ProfileRouter());
     } on DioException catch (e) {

@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lawly/api/models/templates/generate_req_model.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
+import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
@@ -28,13 +29,17 @@ abstract class ITemplateNoAuthScreenWidgetModel implements IWidgetModel {
 
   UnionStateNotifier<Map<String, String>> get fieldValuesState;
 
-  Map<String, String> get fieldValues;
+  /// для получения документов (возможно уже заполненных ранее)
+  UnionStateNotifier<List<DocEntity>> get documentState;
 
   String get title;
 
   bool get isAuthorized;
 
-  void onFillField({required FieldEntity fieldEntity});
+  void onFillField({
+    required FieldEntity fieldEntity,
+    required List<FieldEntity> fields,
+  });
 
   void onDownload();
 
@@ -71,6 +76,8 @@ class TemplateNoAuthScreenWidgetModel
 
   final _fieldValuesState = UnionStateNotifier<Map<String, String>>({});
 
+  final _documentState = UnionStateNotifier<List<DocEntity>>([]);
+
   final Dio _dio = Dio(); // TODO: убрать его отсюда
 
   @override
@@ -81,7 +88,7 @@ class TemplateNoAuthScreenWidgetModel
       _fieldValuesState;
 
   @override
-  Map<String, String> get fieldValues => model.fieldValues;
+  UnionStateNotifier<List<DocEntity>> get documentState => _documentState;
 
   @override
   String get title => context.l10n.template_app_bar_title;
@@ -108,15 +115,20 @@ class TemplateNoAuthScreenWidgetModel
     super.onErrorHandle(error);
 
     if (error is DioException) {
-      if (error.response?.statusCode == 404) {
+      if (error.response?.statusCode == 400) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Шаблон не найден',
+          context.l10n.error_download_template,
+        );
+      } else if (error.response?.statusCode == 404) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.template_not_found,
         );
       } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Ошибка валидации данных',
+          context.l10n.error_validation_data,
         );
       } else if (error.type == DioExceptionType.connectionTimeout ||
           error.type == DioExceptionType.sendTimeout ||
@@ -125,12 +137,12 @@ class TemplateNoAuthScreenWidgetModel
           error.error is SocketException) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Проблемы с подключением к интернету',
+          context.l10n.error_connection_problems,
         );
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          'Неизвестная ошибка',
+          context.l10n.unknown_error,
         );
       }
     }
@@ -142,7 +154,9 @@ class TemplateNoAuthScreenWidgetModel
   }
 
   @override
-  Future<void> onFillField({required FieldEntity fieldEntity}) async {
+  Future<void> onFillField(
+      {required FieldEntity fieldEntity,
+      required List<FieldEntity> fields}) async {
     final value = await stackRouter.root.push(
       createTemplateEditFieldRoute(
         fieldEntity: fieldEntity.copyWith(
@@ -153,17 +167,51 @@ class TemplateNoAuthScreenWidgetModel
 
     if (value != null && value is String) {
       model.fieldValues[fieldEntity.name] = value;
-      // _templateState.content(_templateState.value.data!);
+
       final updatedValues = Map<String, String>.from(model.fieldValues);
 
       _fieldValuesState.content(updatedValues);
 
-      log('Fields Map: ${model.fieldValues.toString()}');
+      if (model.fieldValues.length != fields.length) {
+        for (final field in fields) {
+          if (!model.fieldValues.containsKey(field.name)) {
+            return await onFillField(fieldEntity: field, fields: fields);
+          }
+        }
+      } else {
+        return;
+      }
+
+      // log('Fields Map: ${model.fieldValues.toString()}');
     }
   }
 
   @override
+  Future<void> onFillDocument({required DocEntity document}) async {}
+
+  @override
   Future<void> onDownload() async {
+    try {
+      final fileBytes = await model.templateService.downloadEmptyTemplate(
+        templateId: widget.template.id,
+      );
+
+      final directory = await _getDownloadDirectory();
+      if (directory == null) {
+        _showErrorMessage('Не удалось получить доступ к хранилищу устройства');
+        return;
+      }
+      final newFilePath = '${directory.path}/${widget.template.name}.docx';
+      final newFile = File(newFilePath);
+      await newFile.writeAsBytes(fileBytes);
+
+      await OpenFile.open(newFilePath);
+    } on Exception catch (e) {
+      onErrorHandle(e);
+    }
+  }
+
+  Future<void> onDownloadExtra() async {
     try {
       // Показываем индикатор загрузки
       // showDialog(
@@ -380,6 +428,10 @@ class TemplateNoAuthScreenWidgetModel
   }
 
   Future<void> _loadTemplate() async {
+    final localDocuments = model.saveUserService.getPersonalDocuments();
+
+    final localDocsMap = {for (var doc in localDocuments) doc.id: doc};
+
     final previousData = _templateState.value.data;
     _templateState.loading(previousData);
 
@@ -387,7 +439,13 @@ class TemplateNoAuthScreenWidgetModel
       final templateId = widget.template.id;
       final template =
           await model.templateService.getTemplateById(templateId: templateId);
+      // final documents = (template.requiredDocuments ?? []).map((document) {
+      //   if (document.isPersonal) {
+      //     return localDocsMap[document.id] ?? document;
+      //   }
+      // }).toList() as List<DocEntity>;
       _templateState.content(template);
+      // _documentState.content(documents);
     } on Exception catch (e) {
       _templateState.failure(e, previousData);
       onErrorHandle(e);

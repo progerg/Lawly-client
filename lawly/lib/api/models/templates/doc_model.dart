@@ -12,16 +12,21 @@ class DocModel extends DocEntity {
 
   final List<FieldModel>? fields;
 
+  @JsonKey(name: 'is_personal')
+  final bool isPersonal;
+
   DocModel({
     required super.id,
     required super.name,
     required this.nameRu,
     required super.description,
+    required this.isPersonal,
     this.fields,
     super.link,
   }) : super(
           nameRu: nameRu,
           fields: fields,
+          isPersonal: isPersonal,
         );
 
   factory DocModel.fromJson(Map<String, dynamic> json) =>
@@ -34,6 +39,7 @@ class DocModel extends DocEntity {
       id: entity.id,
       name: entity.name,
       nameRu: entity.nameRu,
+      isPersonal: entity.isPersonal,
       description: entity.description,
       fields:
           entity.fields?.map((field) => FieldModel.fromEntity(field)).toList(),

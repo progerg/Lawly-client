@@ -1,10 +1,13 @@
 import 'package:lawly/api/data_sources/remote/user_service/subscribe_remote_data_source.dart';
+import 'package:lawly/features/profile/domain/entities/subscribe_entity.dart';
 import 'package:lawly/features/profile/domain/entities/tariff_entity.dart';
 
 abstract class ISubscribeRepository {
   Future<List<TariffEntity>> getTariffs();
 
   Future<void> setSubscribe({required int tariffId});
+
+  Future<SubscribeEntity> getSubscribe();
 }
 
 class SubscribeRepository implements ISubscribeRepository {
@@ -22,5 +25,10 @@ class SubscribeRepository implements ISubscribeRepository {
   @override
   Future<void> setSubscribe({required int tariffId}) async {
     return await _subscribeRemoteDataSource.setSubscribe(tariffId: tariffId);
+  }
+
+  @override
+  Future<SubscribeEntity> getSubscribe() async {
+    return await _subscribeRemoteDataSource.getSubscribe();
   }
 }

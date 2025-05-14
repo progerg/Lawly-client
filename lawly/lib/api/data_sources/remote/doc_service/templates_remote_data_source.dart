@@ -51,4 +51,11 @@ abstract class TemplatesRemoteDataSource {
     @Field('status') required String status,
     @Field('error_message') String? errorMessage,
   });
+
+  @POST(TemplatesEndpoints.downloadEmptyTemplate)
+  @DioResponseType(ResponseType.bytes)
+  Future<List<int>> downloadEmptyTemplate({
+    @Field('template_id') required int templateId,
+    @Header('Accept') required String contentType,
+  });
 }

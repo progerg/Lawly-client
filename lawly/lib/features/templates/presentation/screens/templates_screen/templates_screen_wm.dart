@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
@@ -20,7 +22,14 @@ import 'package:union_state/union_state.dart';
 abstract class ITemplatesScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<List<TemplateEntity>> get templatesState;
 
+  ScrollController get scrollController;
+
+  UnionStateNotifier<bool> get canCreateCustomTemplatesState;
+
   String get title;
+
+  UnionStateNotifier<List<TemplateEntity>> get filteredTemplatesState;
+  void onSearchQueryChanged(String query);
 
   void onTemplateTap(TemplateEntity template);
 }
@@ -30,9 +39,11 @@ TemplatesScreenWidgetModel defaultTemplatesScreenWidgetModelFactory(
   final appScope = context.read<IAppScope>();
   final model = TemplatesScreenModel(
     authBloc: appScope.authBloc,
+    subBloc: appScope.subBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
     saveUserService: appScope.saveUserService,
     templateService: appScope.templateService,
+    subscribeService: appScope.subscribeService,
   );
   return TemplatesScreenWidgetModel(
     model,
@@ -51,14 +62,63 @@ class TemplatesScreenWidgetModel
 
   int _offset = 0;
 
+  Timer? _debounceTimer;
+
   final _templatesState = UnionStateNotifier<List<TemplateEntity>>.loading();
+  final _canCreateCustomTemplates = UnionStateNotifier<bool>.loading();
+  final _scrollController = ScrollController();
 
   @override
   UnionStateNotifier<List<TemplateEntity>> get templatesState =>
       _templatesState;
 
   @override
+  UnionStateNotifier<bool> get canCreateCustomTemplatesState =>
+      _canCreateCustomTemplates;
+
+  @override
+  ScrollController get scrollController => _scrollController;
+
+  @override
   String get title => context.l10n.template_app_bar_title;
+
+  final _searchQuery = ValueNotifier<String>('');
+  final _filteredTemplatesState = UnionStateNotifier<List<TemplateEntity>>([]);
+
+  @override
+  UnionStateNotifier<List<TemplateEntity>> get filteredTemplatesState =>
+      _filteredTemplatesState;
+
+  @override
+  void onSearchQueryChanged(String query) {
+    _searchQuery.value = query;
+    _filterTemplates();
+  }
+
+  void _filterTemplates() {
+    final query = _searchQuery.value.toLowerCase();
+
+    // Если запрос пустой, показываем все шаблоны
+    if (query.isEmpty) {
+      final templates = templatesState.value.data;
+      if (templates != null) {
+        _filteredTemplatesState.content(templates);
+      }
+      return;
+    }
+
+    // Фильтруем шаблоны по названию
+    final templates = templatesState.value.data;
+    if (templates != null) {
+      final filtered = templates
+          .where((template) =>
+              template.nameRu.toLowerCase().contains(query) ||
+              template.name.toLowerCase().contains(query))
+          .toList();
+
+      _filteredTemplatesState.content(filtered);
+    }
+  }
 
   TemplatesScreenWidgetModel(
     super.model, {
@@ -71,9 +131,32 @@ class TemplatesScreenWidgetModel
   void initWidgetModel() {
     super.initWidgetModel();
 
-    checkAuth();
+    unawaited(_checkAuth());
+
+    _searchQuery.addListener(() {
+      if (_debounceTimer?.isActive ?? false) _debounceTimer!.cancel();
+      _debounceTimer = Timer(Duration(milliseconds: 300), _filterTemplates);
+    });
+
+    templatesState.addListener(() {
+      if (templatesState.value.data != null) {
+        _filterTemplates();
+      }
+    });
+
+    _scrollController.addListener(
+      _scrollEndListener,
+    );
 
     unawaited(_loadTemplates());
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _searchQuery.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,7 +164,12 @@ class TemplatesScreenWidgetModel
     super.onErrorHandle(error);
 
     if (error is DioException) {
-      if (error.response?.statusCode == 422) {
+      if (error.response?.statusCode == 404) {
+        _scaffoldMessengerWrapper.showSnackBar(
+          context,
+          context.l10n.no_sub,
+        );
+      } else if (error.response?.statusCode == 422) {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
           context.l10n.error_validation_data,
@@ -104,22 +192,71 @@ class TemplatesScreenWidgetModel
     }
   }
 
-  void checkAuth() {
-    final jwtToken = model.tokenLocalDataSource.getAccessToken();
-    final user = model.saveUserService.getAuthUser();
-    if (jwtToken != null && user != null) {
-      model.authBloc.add(AuthEvent.loggedIn(authorizedUser: user));
-    } else {
-      model.authBloc.add(AuthEvent.loggedOut());
+  void _scrollEndListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      // unawaited(_loadTemplates());
+    }
+  }
+
+  Future<void> _checkAuth() async {
+    try {
+      final jwtToken = model.tokenLocalDataSource.getAccessToken();
+      final user = model.saveUserService.getAuthUser();
+      if (jwtToken != null && user != null) {
+        model.authBloc.add(AuthEvent.loggedIn(authorizedUser: user));
+
+        // Подтягиваем подписку
+        final currentSubscribe = await model.getSubscribe();
+        model.subBloc.add(
+          SubEvent.setSub(subscribeEntity: currentSubscribe),
+        );
+
+        _canCreateCustomTemplates.content(
+          currentSubscribe.canCreateCustomTemplates,
+        );
+      } else {
+        model.authBloc.add(AuthEvent.loggedOut());
+        model.subBloc.add(SubEvent.removeSub());
+        _canCreateCustomTemplates.content(false);
+      }
+    } on Exception catch (e) {
+      onErrorHandle(e);
     }
   }
 
   @override
   Future<void> onTemplateTap(TemplateEntity template) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+
     await stackRouter.push(createTemplateNoAuthRoute(
       template: template,
     ));
   }
+
+  // Future<void> _loadTemplates() async {
+  //   final previousData = _templatesState.value.data;
+  //   _templatesState.loading(previousData);
+
+  //   try {
+  //     final templatesWithTotal = await model.templateService.getTotalTemplates(
+  //       offset: _offset,
+  //     );
+  //     _offset++;
+  //     if (previousData != null) {
+  //       final updatedTemplates = [
+  //         ...previousData,
+  //         ...templatesWithTotal.templates,
+  //       ];
+  //       _templatesState.content(updatedTemplates);
+  //     } else {
+  //       _templatesState.content(templatesWithTotal.templates);
+  //     }
+  //   } on Exception catch (e) {
+  //     _templatesState.failure(e, previousData);
+  //     onErrorHandle(e);
+  //   }
+  // }
 
   Future<void> _loadTemplates() async {
     final previousData = _templatesState.value.data;
@@ -130,14 +267,19 @@ class TemplatesScreenWidgetModel
         offset: _offset,
       );
       _offset++;
+
+      List<TemplateEntity> updatedTemplates;
       if (previousData != null) {
-        _templatesState.content([
+        updatedTemplates = [
           ...previousData,
           ...templatesWithTotal.templates,
-        ]);
+        ];
       } else {
-        _templatesState.content(templatesWithTotal.templates);
+        updatedTemplates = templatesWithTotal.templates;
       }
+
+      // Обновляем основной список
+      _templatesState.content(updatedTemplates);
     } on Exception catch (e) {
       _templatesState.failure(e, previousData);
       onErrorHandle(e);

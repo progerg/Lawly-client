@@ -56,7 +56,9 @@ class DocumentEditScreenWidgetModel
   void initWidgetModel() {
     super.initWidgetModel();
 
-    unawaited(_loadFields());
+    unawaited(
+      widget.document.isPersonal ? _loadFieldsForPersonalDoc() : _loadFields(),
+    );
   }
 
   @override
@@ -69,7 +71,7 @@ class DocumentEditScreenWidgetModel
     stackRouter.pop();
   }
 
-  Future<void> _loadFields() async {
+  Future<void> _loadFieldsForPersonalDoc() async {
     final localDocuments = model.saveUserService.getPersonalDocuments();
     final localDocument = localDocuments
         .where(
@@ -101,6 +103,19 @@ class DocumentEditScreenWidgetModel
     } on Exception catch (e) {
       log('Error: ${e.toString()}');
       _fieldsState.failure(e, localDocument?.fields ?? []);
+    }
+  }
+
+  Future<void> _loadFields() async {
+    try {
+      final remoteDocument = await model.getPersonalDocumentById(
+        id: widget.document.id,
+      );
+
+      _fieldsState.content(remoteDocument.fields ?? []);
+    } on Exception catch (e) {
+      log('Error: ${e.toString()}');
+      _fieldsState.failure(e, []);
     }
   }
 }

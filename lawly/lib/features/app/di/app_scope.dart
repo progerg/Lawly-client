@@ -15,6 +15,7 @@ import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
+import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/domain/entities/auth_interceptor.dart';
 import 'package:lawly/features/auth/repository/auth_repository.dart';
 import 'package:lawly/features/auth/repository/save_user_repository.dart';
@@ -56,6 +57,8 @@ abstract class IAppScope {
   AuthGuard get authGuard;
 
   AuthBloc get authBloc;
+
+  SubBloc get subBloc;
 
   AuthRepository get authRepository;
 
@@ -137,6 +140,9 @@ class AppScope implements IAppScope {
 
   @override
   late final AuthBloc authBloc;
+
+  @override
+  late final SubBloc subBloc;
 
   @override
   late final AuthRepository authRepository;
@@ -236,6 +242,7 @@ class AppScope implements IAppScope {
     initService = InitService(initRepository);
 
     authBloc = AuthBloc();
+    subBloc = SubBloc();
 
     authGuard = AuthGuard(authBloc: authBloc);
 
@@ -261,6 +268,7 @@ class AppScope implements IAppScope {
         authRemoteDataSource: authRemoteDataSource,
         tokenLocalDataSource: tokenLocalDataSource,
         authBloc: authBloc,
+        subBloc: subBloc,
         appRouter: router,
       ),
     );
@@ -271,6 +279,7 @@ class AppScope implements IAppScope {
         authRemoteDataSource: authRemoteDataSource,
         tokenLocalDataSource: tokenLocalDataSource,
         authBloc: authBloc,
+        subBloc: subBloc,
         appRouter: router,
       ),
     );
