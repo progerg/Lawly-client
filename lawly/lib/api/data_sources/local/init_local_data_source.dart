@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class InitLocalDataSource {
   static const _isFirstLaunchKey = 'isFirstLaunch';
 
+  // static const _is
+
   final SharedPreferences _prefs;
 
   InitLocalDataSource(this._prefs);

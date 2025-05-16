@@ -40,6 +40,8 @@ import 'package:lawly/features/templates/service/template_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class IAppScope {
+  Dio get dioUserServiceWithoutInterceptor;
+
   Dio get dioUserService;
 
   Dio get dioDocService;
@@ -114,6 +116,9 @@ abstract class IAppScope {
 }
 
 class AppScope implements IAppScope {
+  @override
+  late final Dio dioUserServiceWithoutInterceptor;
+
   @override
   late final Dio dioUserService;
 
@@ -225,6 +230,10 @@ class AppScope implements IAppScope {
 
     prefs = await SharedPreferences.getInstance();
 
+    dioUserServiceWithoutInterceptor = _initDio(
+      baseUrl: env.config.userServiceUrl,
+      proxyUrl: env.config.proxyUrl,
+    );
     dioUserService = _initDio(
       baseUrl: env.config.userServiceUrl,
       proxyUrl: env.config.proxyUrl,
@@ -260,7 +269,10 @@ class AppScope implements IAppScope {
     );
 
     tokenLocalDataSource = TokenLocalDataSource(prefs: prefs);
-    authRemoteDataSource = AuthRemoteDataSource(dioUserService);
+    authRemoteDataSource = AuthRemoteDataSource(
+      // dioUserServiceWithoutInterceptor,
+      dioUserService,
+    );
 
     dioUserService.interceptors.add(
       AuthInterceptor(

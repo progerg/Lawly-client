@@ -3,6 +3,11 @@ import 'package:lawly/features/profile/domain/entities/user_info_entity.dart';
 
 abstract class IUserInfoRepository {
   Future<UserInfoEntity> getUserInfo();
+
+  Future<void> updateFcmToken({
+    required String fcmToken,
+    required String deviceId,
+  });
 }
 
 class UserInfoRepository implements IUserInfoRepository {
@@ -14,5 +19,16 @@ class UserInfoRepository implements IUserInfoRepository {
   @override
   Future<UserInfoEntity> getUserInfo() async {
     return await _userRemoteDataSource.getUserInfo();
+  }
+
+  @override
+  Future<void> updateFcmToken({
+    required String fcmToken,
+    required String deviceId,
+  }) async {
+    return await _userRemoteDataSource.updateFcmToken(
+      fcmToken: fcmToken,
+      deviceId: deviceId,
+    );
   }
 }

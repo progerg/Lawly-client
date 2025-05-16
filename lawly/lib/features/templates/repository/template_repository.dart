@@ -7,8 +7,6 @@ import 'package:lawly/features/templates/domain/entity/template_download_entity.
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/domain/entity/total_templates_entity.dart';
 
-const int defaultLimit = 30;
-
 const String contentType =
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
@@ -42,6 +40,8 @@ abstract class ITemplateRepository {
 }
 
 class TemplateRepository implements ITemplateRepository {
+  static const int defaultLimit = 10; // Default limit for templates
+
   final TemplatesRemoteDataSource _templatesRemoteDataSource;
   final GenerateRemoteDataSource _generateRemoteDataSource;
 

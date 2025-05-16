@@ -12,4 +12,10 @@ abstract class UserRemoteDataSource {
 
   @GET(UserEndpoints.user)
   Future<UserInfoModel> getUserInfo();
+
+  @POST(UserEndpoints.fcmUpdate)
+  Future<void> updateFcmToken({
+    @Field('fcm_token') required String fcmToken,
+    @Field('device_id') required String deviceId,
+  });
 }

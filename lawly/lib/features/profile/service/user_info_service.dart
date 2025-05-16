@@ -10,4 +10,14 @@ class UserInfoService {
   Future<UserInfoEntity> getUserInfo() async {
     return await _userInfoRepository.getUserInfo();
   }
+
+  Future<void> updateFcmToken({
+    required String fcmToken,
+    required String deviceId,
+  }) async {
+    return await _userInfoRepository.updateFcmToken(
+      fcmToken: fcmToken,
+      deviceId: deviceId,
+    );
+  }
 }

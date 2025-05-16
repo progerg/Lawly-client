@@ -5,8 +5,12 @@ import 'dart:io';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lawly/config/app_config.dart';
+import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
@@ -16,6 +20,7 @@ import 'package:lawly/features/navigation/service/router.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_model.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_widget.dart';
+import 'package:lawly/firebase_options.dart';
 import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
 
@@ -27,6 +32,8 @@ abstract class ITemplatesScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<bool> get canCreateCustomTemplatesState;
 
   String get title;
+
+  bool get isLoading;
 
   UnionStateNotifier<List<TemplateEntity>> get filteredTemplatesState;
   void onSearchQueryChanged(String query);
@@ -43,6 +50,7 @@ TemplatesScreenWidgetModel defaultTemplatesScreenWidgetModelFactory(
     tokenLocalDataSource: appScope.tokenLocalDataSource,
     saveUserService: appScope.saveUserService,
     templateService: appScope.templateService,
+    userInfoService: appScope.userInfoService,
     subscribeService: appScope.subscribeService,
   );
   return TemplatesScreenWidgetModel(
@@ -61,6 +69,8 @@ class TemplatesScreenWidgetModel
   final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
   int _offset = 0;
+
+  bool _isLoading = false;
 
   Timer? _debounceTimer;
 
@@ -81,6 +91,9 @@ class TemplatesScreenWidgetModel
 
   @override
   String get title => context.l10n.template_app_bar_title;
+
+  @override
+  bool get isLoading => _isLoading;
 
   final _searchQuery = ValueNotifier<String>('');
   final _filteredTemplatesState = UnionStateNotifier<List<TemplateEntity>>([]);
@@ -192,10 +205,20 @@ class TemplatesScreenWidgetModel
     }
   }
 
+//   Future<void> requestNotificationPermissionOnStartup() async {
+//   final prefs = await SharedPreferences.getInstance();
+//   final bool hasRequestedPermission = prefs.getBool('notification_permission_requested') ?? false;
+
+//   if (!hasRequestedPermission) {
+//     await Permission.notification.request();
+//     await prefs.setBool('notification_permission_requested', true);
+//   }
+// }
+
   void _scrollEndListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      // unawaited(_loadTemplates());
+      unawaited(_loadTemplates());
     }
   }
 
@@ -204,7 +227,31 @@ class TemplatesScreenWidgetModel
       final jwtToken = model.tokenLocalDataSource.getAccessToken();
       final user = model.saveUserService.getAuthUser();
       if (jwtToken != null && user != null) {
+        final config = Environment<AppConfig>.instance().config;
+
         model.authBloc.add(AuthEvent.loggedIn(authorizedUser: user));
+
+        final app = await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+
+        log(app.options.projectId);
+
+        final messaging = FirebaseMessaging.instance;
+        if (Platform.isAndroid) {
+          // TODO: поправить по FCM
+
+          final token = await messaging.getToken();
+
+          log(token ?? 'no token');
+
+          if (token != null) {
+            await model.userInfoService.updateFcmToken(
+              fcmToken: token,
+              deviceId: config.deviceId,
+            );
+          }
+        }
 
         // Подтягиваем подписку
         final currentSubscribe = await model.getSubscribe();
@@ -261,12 +308,16 @@ class TemplatesScreenWidgetModel
   Future<void> _loadTemplates() async {
     final previousData = _templatesState.value.data;
     _templatesState.loading(previousData);
+    _isLoading = true;
 
     try {
       final templatesWithTotal = await model.templateService.getTotalTemplates(
         offset: _offset,
       );
-      _offset++;
+
+      if (_offset < templatesWithTotal.total) {
+        _offset += model.limitForTemplates;
+      }
 
       List<TemplateEntity> updatedTemplates;
       if (previousData != null) {
@@ -278,8 +329,8 @@ class TemplatesScreenWidgetModel
         updatedTemplates = templatesWithTotal.templates;
       }
 
-      // Обновляем основной список
       _templatesState.content(updatedTemplates);
+      _isLoading = false;
     } on Exception catch (e) {
       _templatesState.failure(e, previousData);
       onErrorHandle(e);
