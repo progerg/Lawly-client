@@ -51,7 +51,7 @@ class AuthInterceptor extends Interceptor {
   @override
   Future<void> onError(
       DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401) {
+    if (_authBloc.state.isAuthorized && err.response?.statusCode == 401) {
       try {
         final response = await _retryWithRefreshedToken(err.requestOptions);
         return handler.resolve(response);

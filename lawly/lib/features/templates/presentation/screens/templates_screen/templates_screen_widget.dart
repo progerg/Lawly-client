@@ -43,6 +43,7 @@ class TemplatesScreenWidget
                 templates: data,
                 onSearchQueryChanged: wm.onSearchQueryChanged,
                 scrollController: wm.scrollController,
+                isLoading: wm.isLoading,
               ),
               loadingBuilder: (context, data) => LawlyCircularIndicator(),
               failureBuilder: (context, e, data) => LawlyErrorConnection(),
@@ -64,6 +65,7 @@ class _TemplatesView extends StatelessWidget {
   final bool canCreateCustomTemplates;
   final void Function(String) onSearchQueryChanged;
   final ScrollController scrollController;
+  final bool isLoading;
 
   const _TemplatesView({
     required this.templates,
@@ -71,6 +73,7 @@ class _TemplatesView extends StatelessWidget {
     required this.canCreateCustomTemplates,
     required this.onSearchQueryChanged,
     required this.scrollController,
+    required this.isLoading,
   });
 
   // @override

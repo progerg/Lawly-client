@@ -26,7 +26,7 @@ abstract class TemplatesRemoteDataSource {
   Future<TotalTemplatesModel> getTotalTemplates({
     @Query('search') String? query,
     @Query('limit') required int limit,
-    @Query('page') required int offset,
+    @Query('offset') required int offset,
   });
 
   @GET(TemplatesEndpoints.templateById)

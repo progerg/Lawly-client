@@ -83,7 +83,7 @@ class _TemplatesRemoteDataSource implements TemplatesRemoteDataSource {
     final queryParameters = <String, dynamic>{
       r'search': query,
       r'limit': limit,
-      r'page': offset,
+      r'offset': offset,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
