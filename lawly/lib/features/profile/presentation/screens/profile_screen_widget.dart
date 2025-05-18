@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +51,8 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onUpdateAvatar: wm.onUpdateAvatar,
+          avatarImagePathState: wm.avatarImagePathState,
           userInfoStatus: UserInfoStatus.success,
           username: wm.username,
           email: wm.email,
@@ -58,6 +62,8 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onUpdateAvatar: wm.onUpdateAvatar,
+          avatarImagePathState: wm.avatarImagePathState,
           username: wm.username,
           email: wm.email,
           userInfoStatus: UserInfoStatus.loading,
@@ -66,6 +72,8 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onUpdateAvatar: wm.onUpdateAvatar,
+          avatarImagePathState: wm.avatarImagePathState,
           username: wm.username,
           email: wm.email,
           userInfoStatus: UserInfoStatus.error,
@@ -79,18 +87,22 @@ class _ProfileView extends StatelessWidget {
   final VoidCallback openPrivacyPolicy;
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenSubs;
+  final VoidCallback onUpdateAvatar;
   final UserInfoStatus userInfoStatus;
   final UserInfoEntity? userInfo;
   final String username;
   final String email;
+  final ValueNotifier<String?> avatarImagePathState;
 
   const _ProfileView({
     required this.openPrivacyPolicy,
     required this.onOpenSettings,
     required this.onOpenSubs,
+    required this.onUpdateAvatar,
     required this.userInfoStatus,
     required this.username,
     required this.email,
+    required this.avatarImagePathState,
     this.userInfo,
   });
 
@@ -116,21 +128,32 @@ class _ProfileView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: fixedWidth * 0.15 + 3,
-                        backgroundColor: lightBlue,
-                      ),
-                      CircleAvatar(
-                        radius: fixedWidth * 0.15,
-                        backgroundColor: darkGray,
-                        child: SvgPicture.asset(
-                          BottomNavTabIcons.profileTabIcon,
-                        ),
-                      ),
-                    ],
+                  GestureDetector(
+                    onTap: onUpdateAvatar,
+                    child: ValueListenableBuilder<String?>(
+                        valueListenable: avatarImagePathState,
+                        builder: (_, data, __) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: fixedWidth * 0.15 + 3,
+                                backgroundColor: lightBlue,
+                              ),
+                              CircleAvatar(
+                                radius: fixedWidth * 0.15,
+                                backgroundColor: darkGray,
+                                backgroundImage:
+                                    data != null ? FileImage(File(data)) : null,
+                                child: data == null
+                                    ? SvgPicture.asset(
+                                        BottomNavTabIcons.profileTabIcon,
+                                      )
+                                    : null,
+                              ),
+                            ],
+                          );
+                        }),
                   ),
                   const SizedBox(width: 15),
                   Expanded(
@@ -139,7 +162,8 @@ class _ProfileView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          username,
+                          // username,
+                          userInfo?.name ?? context.l10n.no_name,
                           style: textBold18DarkBlueW500,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
@@ -234,14 +258,14 @@ class _ProfileView extends StatelessWidget {
               ),
               maxLines: 2,
             ),
-            const SizedBox(height: 24),
-            SelectionButton(
-              onPressed: onOpenSettings,
-              text: context.l10n.settings,
-              padding: EdgeInsets.symmetric(
-                horizontal: mediaQuery.size.width * 0.1,
-              ),
-            ),
+            // const SizedBox(height: 24),
+            // SelectionButton(
+            //   onPressed: onOpenSettings,
+            //   text: context.l10n.settings,
+            //   padding: EdgeInsets.symmetric(
+            //     horizontal: mediaQuery.size.width * 0.1,
+            //   ),
+            // ),
           ],
         ),
       ),

@@ -18,6 +18,8 @@ class UserInfoModel extends UserInfoEntity {
   final String? endDate;
 
   UserInfoModel({
+    required super.email,
+    required super.name,
     required this.userId,
     required this.tariff,
     required this.startDate,

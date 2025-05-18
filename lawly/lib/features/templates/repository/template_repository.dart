@@ -1,8 +1,10 @@
 import 'package:lawly/api/data_sources/remote/doc_service/generate_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/templates_remote_data_source.dart';
+import 'package:lawly/api/models/templates/document_creation_model.dart';
 import 'package:lawly/api/models/templates/generate_req_model.dart';
 import 'package:lawly/features/templates/domain/entity/document_creation_entity.dart';
 import 'package:lawly/features/templates/domain/entity/generate_req_entity.dart';
+import 'package:lawly/features/templates/domain/entity/improve_text_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_download_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/domain/entity/total_templates_entity.dart';
@@ -26,7 +28,7 @@ abstract class ITemplateRepository {
 
   Future<DocumentCreationEntity> updateDocument({
     required int documentCreationId,
-    required String status,
+    required DocumentCreationStatus status,
     String? errorMessage,
   });
 
@@ -36,6 +38,14 @@ abstract class ITemplateRepository {
 
   Future<List<int>> downloadEmptyTemplate({
     required int templateId,
+  });
+
+  Future<List<int>> customTemplate({
+    String? description,
+  });
+
+  Future<ImproveTextEntity> improveText({
+    required String text,
   });
 }
 
@@ -94,12 +104,12 @@ class TemplateRepository implements ITemplateRepository {
   @override
   Future<DocumentCreationEntity> updateDocument({
     required int documentCreationId,
-    required String status,
+    required DocumentCreationStatus status,
     String? errorMessage,
   }) async {
     return await _templatesRemoteDataSource.updateDocument(
       documentCreationId: documentCreationId,
-      status: status,
+      status: status.value,
       errorMessage: errorMessage,
     );
   }
@@ -121,6 +131,25 @@ class TemplateRepository implements ITemplateRepository {
     return await _templatesRemoteDataSource.downloadEmptyTemplate(
       templateId: templateId,
       contentType: contentType,
+    );
+  }
+
+  @override
+  Future<List<int>> customTemplate({
+    String? description,
+  }) async {
+    return await _templatesRemoteDataSource.customTemplate(
+      description: description,
+      contentType: contentType,
+    );
+  }
+
+  @override
+  Future<ImproveTextEntity> improveText({
+    required String text,
+  }) async {
+    return await _templatesRemoteDataSource.improveText(
+      text: text,
     );
   }
 }

@@ -7,11 +7,13 @@ import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lawly/api/models/templates/document_creation_model.dart';
 import 'package:lawly/api/models/templates/generate_req_model.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
+import 'package:lawly/features/navigation/domain/enity/document/document_routes.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 import 'package:lawly/features/templates/domain/entity/generate_req_entity.dart';
@@ -19,6 +21,7 @@ import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_model.dart';
 import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_widget.dart';
 import 'package:lawly/l10n/l10n.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -39,6 +42,10 @@ abstract class ITemplateNoAuthScreenWidgetModel implements IWidgetModel {
   void onFillField({
     required FieldEntity fieldEntity,
     required List<FieldEntity> fields,
+  });
+
+  void onFillDocument({
+    required DocEntity document,
   });
 
   void onDownload();
@@ -77,8 +84,6 @@ class TemplateNoAuthScreenWidgetModel
   final _fieldValuesState = UnionStateNotifier<Map<String, String>>({});
 
   final _documentState = UnionStateNotifier<List<DocEntity>>([]);
-
-  final Dio _dio = Dio(); // TODO: убрать его отсюда
 
   @override
   UnionStateNotifier<TemplateEntity> get templateState => _templateState;
@@ -154,9 +159,10 @@ class TemplateNoAuthScreenWidgetModel
   }
 
   @override
-  Future<void> onFillField(
-      {required FieldEntity fieldEntity,
-      required List<FieldEntity> fields}) async {
+  Future<void> onFillField({
+    required FieldEntity fieldEntity,
+    required List<FieldEntity> fields,
+  }) async {
     final value = await stackRouter.root.push(
       createTemplateEditFieldRoute(
         fieldEntity: fieldEntity.copyWith(
@@ -172,6 +178,7 @@ class TemplateNoAuthScreenWidgetModel
 
       _fieldValuesState.content(updatedValues);
 
+      // Отерытие следующего окна поля, если оно не заполнены
       if (model.fieldValues.length != fields.length) {
         for (final field in fields) {
           if (!model.fieldValues.containsKey(field.name)) {
@@ -187,7 +194,40 @@ class TemplateNoAuthScreenWidgetModel
   }
 
   @override
-  Future<void> onFillDocument({required DocEntity document}) async {}
+  Future<void> onFillDocument({required DocEntity document}) async {
+    final fields = await stackRouter.root.push(
+      createDocumentEditRoute(
+        document: document,
+      ),
+    );
+    if (fields != null && fields is List<FieldEntity>) {
+      final updatedDocument = document.copyWith(
+        fields: fields,
+        isPersonal: false,
+      );
+
+      final currentDocuments = _documentState.value.data ?? [];
+
+      final updatedDocuments = currentDocuments.map((doc) {
+        return doc.id == updatedDocument.id ? updatedDocument : doc;
+      }).toList();
+
+      _documentState.content(updatedDocuments);
+
+      for (final doc in updatedDocuments) {
+        if (!_isFullFillDocument(doc)) {
+          return await onFillDocument(document: doc);
+        }
+      }
+      return;
+    }
+  }
+
+  bool _isFullFillDocument(DocEntity document) =>
+      document.fields?.every(
+        (field) => field.value != null && field.value!.isNotEmpty,
+      ) ??
+      false;
 
   @override
   Future<void> onDownload() async {
@@ -211,83 +251,6 @@ class TemplateNoAuthScreenWidgetModel
     }
   }
 
-  Future<void> onDownloadExtra() async {
-    try {
-      // Показываем индикатор загрузки
-      // showDialog(
-      //   context: context,
-      //   barrierDismissible: false,
-      //   builder: (context) => const Center(
-      //     child: CircularProgressIndicator(),
-      //   ),
-      // );
-
-      // final downloadUrl = widget.template.downloadUrl; // TODO 1
-      // final downloadUrl = await model.templateService.getTemplateDownloadById(templateId: templateId); // TODO 2
-      final downloadUrl =
-          'https://s3.firstvds.ru/lawly-test/uploads/test.docx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=3BFLCFOLWF578T5PES0U%2F20250504%2Fdefault%2Fs3%2Faws4_request&X-Amz-Date=20250504T234121Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=038146b3c7639d3f2ce0d42f6cc3df3b3e50b2d8599d33cedabe3d80071b3572';
-      final fileName = _getFileNameFromUrl(downloadUrl) ?? 'document.docx';
-
-      // Для Android: запрашиваем разрешения
-      // if (Platform.isAndroid) {
-      //   final status = await Permission.storage.request();
-      //   if (!status.isGranted) {
-      //     _showErrorMessage('Требуется разрешение на сохранение файлов');
-      //     Navigator.of(context).pop(); // Закрываем индикатор загрузки
-      //     return;
-      //   }
-      // }
-
-      // Определяем директорию для сохранения
-      final directory = await _getDownloadDirectory();
-      if (directory == null) {
-        _showErrorMessage('Не удалось получить доступ к хранилищу устройства');
-        Navigator.of(context).pop();
-        return;
-      }
-
-      final savePath = '${directory.path}/$fileName';
-
-      log('START DOWNLOAD');
-
-      // Скачиваем файл
-      await _dio.download(
-        downloadUrl,
-        savePath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            // Можно обновить прогресс, если нужно
-            final progress = received / total;
-            print('Загружено: ${(progress * 100).toStringAsFixed(0)}%');
-          }
-        },
-      );
-
-      // Закрываем диалог загрузки
-      Navigator.of(context).pop();
-
-      // Показываем успешное сообщение
-      _showSuccessMessage('Файл сохранен в $savePath');
-
-      // Предлагаем открыть файл
-      final shouldOpen = await _showOpenFileDialog();
-      if (shouldOpen == true) {
-        await OpenFile.open(savePath);
-      }
-    } catch (e) {
-      // Закрываем диалог загрузки
-      Navigator.of(context).pop();
-      _showErrorMessage('Ошибка при скачивании: $e');
-    }
-  }
-
-  // Вспомогательные методы
-  String? _getFileNameFromUrl(String url) {
-    final uri = Uri.parse(url);
-    final path = uri.path;
-    return path.split('/').last;
-  }
-
   Future<Directory?> _getDownloadDirectory() async {
     if (Platform.isAndroid) {
       return await getExternalStorageDirectory();
@@ -304,90 +267,45 @@ class TemplateNoAuthScreenWidgetModel
     );
   }
 
-  void _showSuccessMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
+  // bool _areAllFieldsFilled({required TemplateEntity template}) {
+  //   if (template.customFields == null || template.customFields!.isEmpty) {
+  //     return true;
+  //   }
 
-  Future<bool?> _showOpenFileDialog() async {
-    return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Файл скачан'),
-        content: const Text('Открыть файл сейчас?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Нет'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Открыть'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  bool _areAllFieldsFilled({required TemplateEntity template}) {
-    if (template.customFields == null || template.customFields!.isEmpty) {
-      return true;
-    }
-
-    for (final field in template.customFields!) {
-      if (!model.fieldValues.containsKey(field.name) ||
-          model.fieldValues[field.name]!.isEmpty) {
-        return false;
-      }
-    }
-    return true;
-  }
+  //   for (final field in template.customFields!) {
+  //     if (!model.fieldValues.containsKey(field.name) ||
+  //         model.fieldValues[field.name]!.isEmpty) {
+  //       return false;
+  //     }
+  //   }
+  //   return true;
+  // }
 
   @override
   Future<void> onCreateDocument({required TemplateEntity template}) async {
-    // if (!_areAllFieldsFilled(template: template)) {
-    //   _scaffoldMessengerWrapper.showSnackBar(
-    //     context,
-    //     'Заполните все поля перед созданием документа',
-    //   );
-    //   return;
-    // }
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) => WillPopScope(
-        onWillPop: () async =>
-            false, // Предотвращаем закрытие по кнопке "назад"
-        child: AlertDialog(
-          backgroundColor: Colors.white,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text(
-                'Создание документа...',
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-
     try {
-      final fields = model.fieldValues.entries
-          .map((e) => FilledFieldModel(name: e.key, value: e.value))
+      _showLoaderOverlay();
+
+      final customFields = model.fieldValues.entries
+          .map((e) => FilledFieldEntity(name: e.key, value: e.value))
           .toList();
+
+      List<FilledFieldEntity> documentFields = [];
+      for (final DocEntity document in _documentState.value.data ?? []) {
+        documentFields.addAll(
+          document.fields?.map(
+                (field) => FilledFieldEntity(
+                  name: field.name,
+                  value: field.value ?? '',
+                ),
+              ) ??
+              [],
+        );
+      }
 
       final generateRequest = GenerateReqEntity(
         templateId: template.id,
-        fields: fields,
+        fields: customFields,
       );
 
       log('generateRequest: ${GenerateReqModel.fromEntity(generateRequest).toJson()}');
@@ -396,34 +314,58 @@ class TemplateNoAuthScreenWidgetModel
         templateId: template.id,
         customName: template.nameRu,
       );
+      try {
+        await model.templateService.updateDocument(
+          documentCreationId: response.id,
+          status: DocumentCreationStatus.started,
+          errorMessage: response.errorMessage,
+        );
 
-      final fileBytes = await model.templateService.downloadTemplate(
-        generateReqEntity: generateRequest,
-      );
+        final fileBytes = await model.templateService.downloadTemplate(
+          generateReqEntity: generateRequest,
+        );
 
-      final directory = await _getDownloadDirectory();
-      if (directory == null) {
-        _showErrorMessage('Не удалось получить доступ к хранилищу устройства');
-        return;
+        final directory = await _getDownloadDirectory();
+        if (directory == null) {
+          _showErrorMessage(
+            context.l10n.no_access_source,
+          );
+          _hideLoaderOverlay();
+          return;
+        }
+        final newFilePath = '${directory.path}/${template.nameRu}.docx';
+        final newFile = File(newFilePath);
+        await newFile.writeAsBytes(fileBytes);
+
+        await model.templateService.updateDocument(
+          documentCreationId: response.id,
+          status: DocumentCreationStatus.completed,
+          errorMessage: response.errorMessage,
+        );
+
+        _hideLoaderOverlay();
+
+        await stackRouter.push(
+          createTemplateDownloadRoute(
+            filePath: newFilePath,
+            imageUrl: template.imageUrl,
+          ),
+        );
+      } catch (e) {
+        await model.templateService.updateDocument(
+          documentCreationId: response.id,
+          status: DocumentCreationStatus.error,
+          errorMessage: response.errorMessage,
+        );
+        rethrow;
       }
-      final newFilePath = '${directory.path}/${template.nameRu}.docx';
-      final newFile = File(newFilePath);
-      await newFile.writeAsBytes(fileBytes);
-
-      await model.templateService.updateDocument(
-        documentCreationId: response.id,
-        status: 'completed',
-        errorMessage: response.errorMessage,
-      );
-
-      Navigator.of(context).pop();
-
-      await OpenFile.open(newFilePath);
     } catch (e) {
-      _scaffoldMessengerWrapper.showSnackBar(
-        context,
-        'Ошибка при создании документа: $e', // TODO: убрать e
-      );
+      // _scaffoldMessengerWrapper.showSnackBar(
+      //   context,
+      //   'Ошибка при создании документа: $e', // TODO: убрать e
+      // );
+      _hideLoaderOverlay();
+      onErrorHandle(e);
     }
   }
 
@@ -436,19 +378,32 @@ class TemplateNoAuthScreenWidgetModel
     _templateState.loading(previousData);
 
     try {
+      // Получение шаблона
       final templateId = widget.template.id;
       final template =
           await model.templateService.getTemplateById(templateId: templateId);
-      // final documents = (template.requiredDocuments ?? []).map((document) {
-      //   if (document.isPersonal) {
-      //     return localDocsMap[document.id] ?? document;
-      //   }
-      // }).toList() as List<DocEntity>;
+
+      // Получение документов (возможно уже заполненных ранее)
+      final documents = (template.requiredDocuments ?? []).map((document) {
+        if (document.isPersonal) {
+          return localDocsMap[document.id] ?? document;
+        }
+        return document;
+      }).toList();
+
       _templateState.content(template);
-      // _documentState.content(documents);
+      _documentState.content(documents);
     } on Exception catch (e) {
       _templateState.failure(e, previousData);
       onErrorHandle(e);
     }
+  }
+
+  void _showLoaderOverlay() {
+    context.loaderOverlay.show();
+  }
+
+  void _hideLoaderOverlay() {
+    context.loaderOverlay.hide();
   }
 }

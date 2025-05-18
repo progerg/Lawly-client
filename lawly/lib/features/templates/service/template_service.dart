@@ -1,5 +1,7 @@
+import 'package:lawly/api/models/templates/document_creation_model.dart';
 import 'package:lawly/features/templates/domain/entity/document_creation_entity.dart';
 import 'package:lawly/features/templates/domain/entity/generate_req_entity.dart';
+import 'package:lawly/features/templates/domain/entity/improve_text_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_download_entity.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/domain/entity/total_templates_entity.dart';
@@ -47,7 +49,7 @@ class TemplateService {
 
   Future<DocumentCreationEntity> updateDocument({
     required int documentCreationId,
-    required String status,
+    required DocumentCreationStatus status,
     String? errorMessage,
   }) async {
     return await _templateRepository.updateDocument(
@@ -70,6 +72,22 @@ class TemplateService {
   }) async {
     return await _templateRepository.downloadEmptyTemplate(
       templateId: templateId,
+    );
+  }
+
+  Future<List<int>> customTemplate({
+    String? description,
+  }) async {
+    return await _templateRepository.customTemplate(
+      description: description,
+    );
+  }
+
+  Future<ImproveTextEntity> improveText({
+    required String text,
+  }) async {
+    return await _templateRepository.improveText(
+      text: text,
     );
   }
 }

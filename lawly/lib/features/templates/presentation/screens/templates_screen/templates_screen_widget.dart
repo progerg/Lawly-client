@@ -39,6 +39,7 @@ class TemplatesScreenWidget
               unionStateListenable: wm.canCreateCustomTemplatesState,
               builder: (context, canCreateCustomTemplates) => _TemplatesView(
                 canCreateCustomTemplates: canCreateCustomTemplates,
+                onCreateCustomTemplate: wm.onCreateCustomTemplate,
                 onTemplateTap: wm.onTemplateTap,
                 templates: data,
                 onSearchQueryChanged: wm.onSearchQueryChanged,
@@ -61,6 +62,7 @@ class TemplatesScreenWidget
 
 class _TemplatesView extends StatelessWidget {
   final void Function(TemplateEntity) onTemplateTap;
+  final VoidCallback onCreateCustomTemplate;
   final List<TemplateEntity> templates;
   final bool canCreateCustomTemplates;
   final void Function(String) onSearchQueryChanged;
@@ -69,6 +71,7 @@ class _TemplatesView extends StatelessWidget {
 
   const _TemplatesView({
     required this.templates,
+    required this.onCreateCustomTemplate,
     required this.onTemplateTap,
     required this.canCreateCustomTemplates,
     required this.onSearchQueryChanged,
@@ -152,7 +155,9 @@ class _TemplatesView extends StatelessWidget {
                   : templates.length,
               itemBuilder: (context, index) {
                 if (canCreateCustomTemplates && index == 0) {
-                  return _CreateTemplateCard();
+                  return _CreateTemplateCard(
+                    onCreateCustomTemplate: onCreateCustomTemplate,
+                  );
                 }
 
                 final templateIndex =
@@ -227,8 +232,8 @@ class _TemplateCard extends StatelessWidget {
                         width: double.infinity,
                         child: template.imageUrl.isNotEmpty
                             ? Image.network(
-                                // template.imageUrl,
-                                'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
+                                template.imageUrl,
+                                // 'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => const SizedBox(),
                               )
@@ -285,12 +290,16 @@ class _TemplateCard extends StatelessWidget {
 }
 
 class _CreateTemplateCard extends StatelessWidget {
-  const _CreateTemplateCard();
+  final VoidCallback onCreateCustomTemplate;
+
+  const _CreateTemplateCard({
+    required this.onCreateCustomTemplate,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onCreateCustomTemplate,
       child: Container(
         decoration: BoxDecoration(
           color: lightGray,

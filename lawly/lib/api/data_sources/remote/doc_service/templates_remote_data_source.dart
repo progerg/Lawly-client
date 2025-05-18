@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:lawly/api/endpoints/doc_service/templates_endpoints.dart';
 import 'package:lawly/api/models/templates/doc_model.dart';
 import 'package:lawly/api/models/templates/document_creation_model.dart';
+import 'package:lawly/api/models/templates/improve_text_model.dart';
 import 'package:lawly/api/models/templates/template_download_model.dart';
 import 'package:lawly/api/models/templates/template_model.dart';
 import 'package:lawly/api/models/templates/total_templates_model.dart';
@@ -57,5 +58,17 @@ abstract class TemplatesRemoteDataSource {
   Future<List<int>> downloadEmptyTemplate({
     @Field('template_id') required int templateId,
     @Header('Accept') required String contentType,
+  });
+
+  @POST(TemplatesEndpoints.customTemplate)
+  @DioResponseType(ResponseType.bytes)
+  Future<List<int>> customTemplate({
+    @Query('description') String? description,
+    @Header('Accept') required String contentType,
+  });
+
+  @POST(TemplatesEndpoints.improveText)
+  Future<ImproveTextModel> improveText({
+    @Field('text') required String text,
   });
 }

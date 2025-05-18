@@ -14,7 +14,8 @@ AutoRoute createTemplateRouter() => AutoRoute(
           path: AppRoutePaths.templatesPath,
         ),
         templateNoAuthRoute,
-        // templateEditFieldRoute,
+        templateDownloadRoute,
+        customTemplateRoute,
       ],
     );
 
@@ -22,6 +23,17 @@ PageRouteInfo createTemplateNoAuthRoute({
   required TemplateEntity template,
 }) =>
     TemplateNoAuthRoute(template: template);
+
+PageRouteInfo createTemplateDownloadRoute({
+  required String filePath,
+  String? imageUrl,
+}) =>
+    TemplateDownloadRoute(
+      filePath: filePath,
+      imageUrl: imageUrl,
+    );
+
+PageRouteInfo createCustomTemplate() => CustomTemplateRoute();
 
 PageRouteInfo createTemplateEditFieldRoute({
   required FieldEntity fieldEntity,
@@ -31,6 +43,18 @@ PageRouteInfo createTemplateEditFieldRoute({
 final templateNoAuthRoute = CustomRoute(
   page: TemplateNoAuthRoute.page,
   path: TemplateRoutePaths.templateNoAuth,
+  transitionsBuilder: TransitionsBuilders.slideLeft,
+);
+
+final customTemplateRoute = CustomRoute(
+  page: CustomTemplateRoute.page,
+  path: TemplateRoutePaths.customTemplate,
+  transitionsBuilder: TransitionsBuilders.slideLeft,
+);
+
+final templateDownloadRoute = CustomRoute(
+  page: TemplateDownloadRoute.page,
+  path: TemplateRoutePaths.templateDownload,
   transitionsBuilder: TransitionsBuilders.slideLeft,
 );
 

@@ -27,6 +27,7 @@ class TemplateEditFieldScreenWidget
       resizeToAvoidBottomInset: false,
       body: UnfocusGestureDetector(
         child: _EditFieldView(
+          onImproveText: wm.onImproveText,
           onEnter: wm.onEnter,
           onBack: wm.goBack,
           fieldEntity: fieldEntity,
@@ -40,12 +41,14 @@ class TemplateEditFieldScreenWidget
 class _EditFieldView extends StatelessWidget {
   final VoidCallback onEnter;
   final VoidCallback onBack;
+  final VoidCallback onImproveText;
   final FieldEntity fieldEntity;
   final TextEditingController controller;
 
   const _EditFieldView({
     required this.onEnter,
     required this.onBack,
+    required this.onImproveText,
     required this.fieldEntity,
     required this.controller,
   });
@@ -65,7 +68,7 @@ class _EditFieldView extends StatelessWidget {
           top: MediaQuery.of(context).size.height * 0.15,
           child: Container(
             decoration: const BoxDecoration(
-              color: Color(0xFF383B53),
+              color: darkBlue,
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
             padding: const EdgeInsets.all(24.0),
@@ -92,9 +95,9 @@ class _EditFieldView extends StatelessWidget {
 
                   // Текстовое поле
                   Container(
-                    height: mediaQuery.size.height * 0.4,
+                    height: mediaQuery.size.height * 0.35,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEAEAEA),
+                      color: lightGray,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -136,7 +139,7 @@ class _EditFieldView extends StatelessWidget {
                           onPressed: onEnter,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: const Color(0xFF383B53),
+                            foregroundColor: darkBlue,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -154,6 +157,36 @@ class _EditFieldView extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 12),
+
+                  if (fieldEntity.canImproveAi)
+                    Expanded(
+                      child: Center(
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: ElevatedButton(
+                            onPressed: onImproveText,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: darkBlue,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: Text(
+                              context.l10n.perform_with_ai,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
 
                   const SizedBox(height: 12),
 
