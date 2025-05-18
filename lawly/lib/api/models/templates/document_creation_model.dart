@@ -23,12 +23,15 @@ class DocumentCreationModel extends DocumentCreationEntity {
   @JsonKey(name: 'error_message')
   final String? errorMessage;
 
+  @JsonKey(name: 'status')
+  final DocumentCreationStatus status;
+
   DocumentCreationModel({
     required super.id,
     required this.customName,
     required this.userId,
     required this.templateId,
-    required super.status,
+    required this.status,
     required this.startDate,
     this.endDate,
     this.errorMessage,
@@ -39,8 +42,32 @@ class DocumentCreationModel extends DocumentCreationEntity {
           startDate: startDate,
           endDate: endDate,
           errorMessage: errorMessage,
+          status: status,
         );
 
   factory DocumentCreationModel.fromJson(Map<String, dynamic> json) =>
       _$DocumentCreationModelFromJson(json);
+}
+
+const _started = 'started';
+
+const _completed = 'completed';
+
+const _error = 'error';
+
+const _processing = 'processing';
+
+enum DocumentCreationStatus {
+  @JsonValue(_started)
+  started(_started),
+  @JsonValue(_completed)
+  completed(_completed),
+  @JsonValue(_processing)
+  error(_error),
+  @JsonValue(_error)
+  processing(_processing);
+
+  final String value;
+
+  const DocumentCreationStatus(this.value);
 }

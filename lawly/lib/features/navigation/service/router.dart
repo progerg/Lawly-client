@@ -39,6 +39,10 @@ import 'package:lawly/features/profile/presentation/screens/settings_screen/sett
 import 'package:lawly/features/profile/presentation/screens/sub_screen/sub_screen_widget.dart';
 import 'package:lawly/features/profile/presentation/screens/sub_screen/sub_screen_wm.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
+import 'package:lawly/features/templates/presentation/screens/custom_template_screen/custom_template_screen_widget.dart';
+import 'package:lawly/features/templates/presentation/screens/custom_template_screen/custom_template_screen_wm.dart';
+import 'package:lawly/features/templates/presentation/screens/template_download_screen/template_download_screen_widget.dart';
+import 'package:lawly/features/templates/presentation/screens/template_download_screen/template_download_screen_wm.dart';
 import 'package:lawly/features/templates/presentation/screens/template_edit_field_screen/template_edit_field_screen_widget.dart';
 import 'package:lawly/features/templates/presentation/screens/template_edit_field_screen/template_edit_field_screen_wm.dart';
 import 'package:lawly/features/templates/presentation/screens/template_noauth_sreen/template_noauth_screen_widget.dart';

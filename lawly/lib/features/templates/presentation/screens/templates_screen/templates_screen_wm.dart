@@ -36,6 +36,9 @@ abstract class ITemplatesScreenWidgetModel implements IWidgetModel {
   bool get isLoading;
 
   UnionStateNotifier<List<TemplateEntity>> get filteredTemplatesState;
+
+  void onCreateCustomTemplate();
+
   void onSearchQueryChanged(String query);
 
   void onTemplateTap(TemplateEntity template);
@@ -106,6 +109,13 @@ class TemplatesScreenWidgetModel
   void onSearchQueryChanged(String query) {
     _searchQuery.value = query;
     _filterTemplates();
+  }
+
+  @override
+  Future<void> onCreateCustomTemplate() async {
+    await stackRouter.push(
+      createCustomTemplate(),
+    );
   }
 
   void _filterTemplates() {

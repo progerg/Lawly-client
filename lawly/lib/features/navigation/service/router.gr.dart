@@ -193,6 +193,58 @@ class ChatRouteArgs {
 }
 
 /// generated route for
+/// [CustomTemplateScreenWidget]
+class CustomTemplateRoute extends PageRouteInfo<CustomTemplateRouteArgs> {
+  CustomTemplateRoute({
+    Key? key,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultCustomTemplateScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         CustomTemplateRoute.name,
+         args: CustomTemplateRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
+
+  static const String name = 'CustomTemplateRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<CustomTemplateRouteArgs>(
+        orElse: () => const CustomTemplateRouteArgs(),
+      );
+      return CustomTemplateScreenWidget(
+        key: args.key,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class CustomTemplateRouteArgs {
+  const CustomTemplateRouteArgs({
+    this.key,
+    this.wmFactory = defaultCustomTemplateScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'CustomTemplateRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [DocumentEditScreenWidget]
 class DocumentEditRoute extends PageRouteInfo<DocumentEditRouteArgs> {
   DocumentEditRoute({
@@ -609,6 +661,71 @@ class SubRouteArgs {
   @override
   String toString() {
     return 'SubRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
+/// [TemplateDownloadScreenWidget]
+class TemplateDownloadRoute extends PageRouteInfo<TemplateDownloadRouteArgs> {
+  TemplateDownloadRoute({
+    Key? key,
+    required String filePath,
+    String? imageUrl,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultTemplateDownloadScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TemplateDownloadRoute.name,
+         args: TemplateDownloadRouteArgs(
+           key: key,
+           filePath: filePath,
+           imageUrl: imageUrl,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'TemplateDownloadRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TemplateDownloadRouteArgs>();
+      return TemplateDownloadScreenWidget(
+        key: args.key,
+        filePath: args.filePath,
+        imageUrl: args.imageUrl,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class TemplateDownloadRouteArgs {
+  const TemplateDownloadRouteArgs({
+    this.key,
+    required this.filePath,
+    this.imageUrl,
+    this.wmFactory = defaultTemplateDownloadScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final String filePath;
+
+  final String? imageUrl;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'TemplateDownloadRouteArgs{key: $key, filePath: $filePath, imageUrl: $imageUrl, wmFactory: $wmFactory}';
   }
 }
 

@@ -21,5 +21,9 @@ class TemplatesEndpoints {
   static const String downloadEmptyTemplate =
       '$_baseUrl/templates/download-empty-template';
 
+  static const String customTemplate = '$_baseUrl/templates/custom';
+
+  static const String improveText = '$_baseUrl/documents/improve-text';
+
   static const String generate = '$_baseUrl/documents/generate';
 }

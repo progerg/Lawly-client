@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:lawly/assets/colors/colors.dart';
 import 'package:lawly/assets/themes/theme_data.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/common/widgets/di_scope.dart';
 import 'package:lawly/l10n/l10n.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class App extends StatefulWidget {
   final IAppScope _scope;
@@ -25,21 +28,29 @@ class _AppState extends State<App> {
         return widget._scope;
       },
       dispose: (context, scope) => scope.dispose(),
-      child: MaterialApp.router(
-        /// Localization
-        locale: _localizations.first,
-        localizationsDelegates: _localizationsDelegates,
-        supportedLocales: _localizations,
+      child: GlobalLoaderOverlay(
+        overlayColor: darkBlue80,
+        overlayWidgetBuilder: (_) => Center(
+          child: SpinKitThreeBounce(
+            color: white,
+          ),
+        ),
+        child: MaterialApp.router(
+          /// Localization
+          locale: _localizations.first,
+          localizationsDelegates: _localizationsDelegates,
+          supportedLocales: _localizations,
 
-        /// Theme
-        theme: defaultTheme,
+          /// Theme
+          theme: defaultTheme,
 
-        /// Routing
-        // routeInformationParser: const EmptyRouteParser(),
-        routerDelegate: widget._scope.router.delegate(),
-        routeInformationParser: widget._scope.router.defaultRouteParser(),
+          /// Routing
+          // routeInformationParser: const EmptyRouteParser(),
+          routerDelegate: widget._scope.router.delegate(),
+          routeInformationParser: widget._scope.router.defaultRouteParser(),
 
-        builder: _builder,
+          builder: _builder,
+        ),
       ),
     );
   }

@@ -32,4 +32,12 @@ class ProfileScreenModel extends ElementaryModel {
   Future<UserInfoEntity> getUserInfo() async {
     return await _userInfoService.getUserInfo();
   }
+
+  Future<void> saveUserAvatarPath(String path) async {
+    await saveUserService.saveUserAvatarPath(path);
+  }
+
+  Future<String?> getUserAvatarPath() async {
+    return await saveUserService.getUserAvatarPath();
+  }
 }

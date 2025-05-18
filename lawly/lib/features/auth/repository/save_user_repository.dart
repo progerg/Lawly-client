@@ -11,6 +11,10 @@ abstract class ISaveUserRepository {
   Future<void> savePersonalDocuments({required List<DocEntity> documents});
 
   List<DocEntity> getPersonalDocuments();
+
+  Future<void> saveUserAvatarPath(String path);
+
+  Future<String?> getUserAvatarPath();
 }
 
 class SaveUserRepository implements ISaveUserRepository {
@@ -42,5 +46,15 @@ class SaveUserRepository implements ISaveUserRepository {
         documents.map((doc) => DocModel.fromEntity(doc)).toList();
     return await _saveUserLocalDataSource.savePersonalDocuments(
         documents: documentModels);
+  }
+
+  @override
+  Future<void> saveUserAvatarPath(String path) async {
+    await _saveUserLocalDataSource.saveUserAvatarPath(path);
+  }
+
+  @override
+  Future<String?> getUserAvatarPath() async {
+    return _saveUserLocalDataSource.getUserAvatarPath();
   }
 }

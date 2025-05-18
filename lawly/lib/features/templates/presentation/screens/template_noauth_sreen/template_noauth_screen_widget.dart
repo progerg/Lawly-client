@@ -73,6 +73,7 @@ class TemplateNoAuthScreenWidget
                       documents: documents,
                       onCreateDocument: wm.onCreateDocument,
                       onFillField: wm.onFillField,
+                      onFillDocument: wm.onFillDocument,
                       isAuthorized: wm.isAuthorized,
                       template: data,
                     ),
@@ -102,6 +103,9 @@ class _TemplateCard extends StatelessWidget {
     required FieldEntity fieldEntity,
     required List<FieldEntity> fields,
   }) onFillField;
+  final void Function({
+    required DocEntity document,
+  }) onFillDocument;
   final Map<String, String> fieldValues;
   final List<DocEntity> documents;
   final bool isAuthorized;
@@ -111,6 +115,7 @@ class _TemplateCard extends StatelessWidget {
     required this.onDownload,
     required this.onCreateDocument,
     required this.onFillField,
+    required this.onFillDocument,
     required this.fieldValues,
     required this.documents,
     required this.isAuthorized,
@@ -137,15 +142,17 @@ class _TemplateCard extends StatelessWidget {
                     GestureDetector(
                       onTap: () => onDownload(),
                       child: Container(
+                        height: mediaQuery.size.height * 0.45,
                         width: mediaQuery.size.width,
                         decoration: const BoxDecoration(
                           color: lightGray,
                         ),
                         child: template.imageUrl.isNotEmpty
                             ? Image.network(
-                                // template.imageUrl,
-                                'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
-                                fit: BoxFit.fitHeight,
+                                template.imageUrl,
+                                // 'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
+                                fit: BoxFit.fitWidth,
+                                alignment: Alignment.topCenter,
                                 errorBuilder: (_, __, ___) => const SizedBox(),
                               )
                             : const SizedBox(),
@@ -182,7 +189,10 @@ class _TemplateCard extends StatelessWidget {
                   Column(
                     children: [
                       const SizedBox(height: 20),
-                      _DocumentsSection(documents: template.requiredDocuments!),
+                      _DocumentsSection(
+                        documents: documents,
+                        onFillDocument: onFillDocument,
+                      ),
                     ],
                   ),
                 // Секция пользовательских полей
@@ -221,10 +231,27 @@ class _TemplateCard extends StatelessWidget {
 
 class _DocumentsSection extends StatelessWidget {
   final List<DocEntity> documents;
+  final void Function({
+    required DocEntity document,
+  }) onFillDocument;
 
   const _DocumentsSection({
     required this.documents,
+    required this.onFillDocument,
   });
+
+  bool isSelected(DocEntity document) =>
+      document.fields?.every(
+        (field) => field.value != null && field.value!.isNotEmpty,
+      ) ??
+      false;
+
+  String getSubTitle(DocEntity document) {
+    if (document.fields != null) {
+      return _getDocumentSummary(document.fields!);
+    }
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,18 +276,26 @@ class _DocumentsSection extends StatelessWidget {
               final document = documents[index];
               return _TileItem(
                 title: document.nameRu,
-                subtitle: 'some_data',
+                subtitle: getSubTitle(document),
                 isSelected: () =>
-                    document.isPersonal, // Для примера первый элемент выбран
-                onTap: () {
-                  // Здесь будет ваша логика при нажатии
-                },
+                    isSelected(document), // Для примера первый элемент выбран
+                onTap: () => onFillDocument(
+                  document: document,
+                ),
               );
             },
           ),
         ),
       ],
     );
+  }
+
+  String _getDocumentSummary(List<FieldEntity> fields) {
+    // Объединяем значения заполненных полей через пробел
+    return fields
+        .where((field) => field.value != null && field.value!.isNotEmpty)
+        .map((field) => field.value)
+        .join(' ');
   }
 }
 

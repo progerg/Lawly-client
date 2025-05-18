@@ -63,7 +63,8 @@ class DocumentEditScreenWidgetModel
 
   @override
   void onApproveChanges() {
-    stackRouter.pop(widget.document);
+    // TODO: не используется
+    // stackRouter.pop(widget.document);
   }
 
   @override
@@ -112,7 +113,8 @@ class DocumentEditScreenWidgetModel
         id: widget.document.id,
       );
 
-      _fieldsState.content(remoteDocument.fields ?? []);
+      _fieldsState
+          .content(widget.document.fields ?? remoteDocument.fields ?? []);
     } on Exception catch (e) {
       log('Error: ${e.toString()}');
       _fieldsState.failure(e, []);

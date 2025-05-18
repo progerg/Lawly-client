@@ -26,4 +26,12 @@ class SaveUserService {
   List<DocEntity> getPersonalDocuments() {
     return _saveUserRepository.getPersonalDocuments();
   }
+
+  Future<void> saveUserAvatarPath(String path) async {
+    await _saveUserRepository.saveUserAvatarPath(path);
+  }
+
+  Future<String?> getUserAvatarPath() async {
+    return await _saveUserRepository.getUserAvatarPath();
+  }
 }

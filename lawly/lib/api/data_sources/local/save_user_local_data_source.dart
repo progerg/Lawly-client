@@ -16,6 +16,8 @@ class SaveUserLocalDataSource {
 
   static const String personalDocumentsKey = 'personal-documents';
 
+  static const String userAvatarPathKey = 'user-avatar-path';
+
   Future<void> saveAuthUser({required AuthorizedUserModel model}) async {
     final data = json.encode(model.toJson());
 
@@ -52,5 +54,13 @@ class SaveUserLocalDataSource {
           .toList();
     }
     return [];
+  }
+
+  Future<void> saveUserAvatarPath(String path) async {
+    await _prefs.setString(userAvatarPathKey, path);
+  }
+
+  Future<String?> getUserAvatarPath() async {
+    return _prefs.getString(userAvatarPathKey);
   }
 }
