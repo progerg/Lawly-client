@@ -9,12 +9,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lawly/config/app_config.dart';
 import 'package:lawly/config/enviroment/enviroment.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/bloc/auth_bloc/auth_bloc.dart';
 import 'package:lawly/features/app/bloc/sub_bloc/sub_bloc.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
+import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
@@ -23,6 +25,7 @@ import 'package:lawly/features/templates/presentation/screens/templates_screen/t
 import 'package:lawly/firebase_options.dart';
 import 'package:lawly/l10n/l10n.dart';
 import 'package:union_state/union_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class ITemplatesScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<List<TemplateEntity>> get templatesState;
@@ -42,6 +45,8 @@ abstract class ITemplatesScreenWidgetModel implements IWidgetModel {
   void onSearchQueryChanged(String query);
 
   void onTemplateTap(TemplateEntity template);
+
+  void onAddToMyTemplates(TemplateEntity template);
 }
 
 TemplatesScreenWidgetModel defaultTemplatesScreenWidgetModelFactory(
@@ -59,6 +64,7 @@ TemplatesScreenWidgetModel defaultTemplatesScreenWidgetModelFactory(
   return TemplatesScreenWidgetModel(
     model,
     stackRouter: context.router,
+    l10n: context.l10n,
     appRouter: appScope.router,
     scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
@@ -69,6 +75,7 @@ class TemplatesScreenWidgetModel
     implements ITemplatesScreenWidgetModel {
   final StackRouter stackRouter;
   final AppRouter appRouter;
+  final AppLocalizations l10n;
   final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
   int _offset = 0;
@@ -143,9 +150,24 @@ class TemplatesScreenWidgetModel
     }
   }
 
+  @override
+  Future<void> onAddToMyTemplates(TemplateEntity template) async {
+    await model.saveUserService.saveLocalTemplates(
+      template: LocalTemplateEntity(
+        templateId: template.id,
+        name:
+            '${l10n.empty_template} ${template.nameRu} ${l10n.from} ${DateFormat('dd.MM.yy').format(DateTime.now())}',
+        filePath: '',
+        imageUrl: template.imageUrl,
+        isEmpty: true,
+      ),
+    );
+  }
+
   TemplatesScreenWidgetModel(
     super.model, {
     required this.stackRouter,
+    required this.l10n,
     required this.appRouter,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;

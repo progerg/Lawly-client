@@ -42,6 +42,8 @@ abstract class IProfileScreenWidgetModel implements IWidgetModel {
 
   void onOpenSubs();
 
+  void onOpenMyTemplates();
+
   void onLogout();
 }
 
@@ -159,6 +161,11 @@ class ProfileScreenWidgetModel
     if (newTariff != null) {
       unawaited(_loadUserInfo());
     }
+  }
+
+  @override
+  Future<void> onOpenMyTemplates() async {
+    await stackRouter.push(createMyTemplatesRoute());
   }
 
   @override

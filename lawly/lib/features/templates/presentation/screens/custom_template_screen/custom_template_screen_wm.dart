@@ -4,8 +4,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
+import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
 import 'package:lawly/features/templates/presentation/screens/custom_template_screen/custom_template_screen_model.dart';
@@ -14,6 +16,7 @@ import 'package:lawly/l10n/l10n.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class ICustomTemplateScreenWidgetModel implements IWidgetModel {
   String get title;
@@ -32,11 +35,13 @@ CustomTemplateScreenWidgetModel defaultCustomTemplateScreenWidgetModelFactory(
   final appScope = context.read<IAppScope>();
   final model = CustomTemplateScreenModel(
     templateService: appScope.templateService,
+    saveUserService: appScope.saveUserService,
   );
   return CustomTemplateScreenWidgetModel(
     model,
     appRouter: appScope.router,
     stackRouter: context.router,
+    l10n: context.l10n,
     scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
@@ -48,11 +53,13 @@ class CustomTemplateScreenWidgetModel
     super.model, {
     required this.appRouter,
     required this.stackRouter,
+    required this.l10n,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
   final StackRouter stackRouter;
   final AppRouter appRouter;
+  final AppLocalizations l10n;
 
   final _controller = TextEditingController();
 
@@ -123,19 +130,32 @@ class CustomTemplateScreenWidgetModel
 
       final directory = await _getDownloadDirectory();
       if (directory == null) {
-        _showErrorMessage('Не удалось получить доступ к хранилищу устройства');
+        _showErrorMessage(context.l10n.no_access_source);
         return;
       }
-      final firstWord = _controller.text.split(' ').first;
-      final newFilePath = '${directory.path}/$firstWord.docx';
+      // final firstWord = _controller.text.split(' ').first;
+      final fileName =
+          '${l10n.my_template} ${DateTime.now().millisecondsSinceEpoch}';
+      final newFilePath = '${directory.path}/$fileName.docx';
       final newFile = File(newFilePath);
       await newFile.writeAsBytes(fileBytes);
+
+      await model.saveLocalTemplates(
+        template: LocalTemplateEntity(
+          templateId: DateTime.now().millisecondsSinceEpoch,
+          name:
+              '${l10n.my_template} ${l10n.from} ${DateFormat('dd.MM.yy').format(DateTime.now())}',
+          filePath: newFilePath,
+          isEmpty: false,
+        ),
+      );
 
       _hideLoaderOverlay();
 
       await stackRouter.push(
         createTemplateDownloadRoute(
           filePath: newFilePath,
+          fileBytes: fileBytes,
         ),
       );
     } catch (e) {

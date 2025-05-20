@@ -51,6 +51,7 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onOpenMyTemplates: wm.onOpenMyTemplates,
           onUpdateAvatar: wm.onUpdateAvatar,
           avatarImagePathState: wm.avatarImagePathState,
           userInfoStatus: UserInfoStatus.success,
@@ -62,6 +63,7 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onOpenMyTemplates: wm.onOpenMyTemplates,
           onUpdateAvatar: wm.onUpdateAvatar,
           avatarImagePathState: wm.avatarImagePathState,
           username: wm.username,
@@ -72,6 +74,7 @@ class ProfileScreenWidget extends ElementaryWidget<IProfileScreenWidgetModel> {
           openPrivacyPolicy: wm.openPrivacyPolicy,
           onOpenSettings: wm.onOpenSettings,
           onOpenSubs: wm.onOpenSubs,
+          onOpenMyTemplates: wm.onOpenMyTemplates,
           onUpdateAvatar: wm.onUpdateAvatar,
           avatarImagePathState: wm.avatarImagePathState,
           username: wm.username,
@@ -87,6 +90,7 @@ class _ProfileView extends StatelessWidget {
   final VoidCallback openPrivacyPolicy;
   final VoidCallback onOpenSettings;
   final VoidCallback onOpenSubs;
+  final VoidCallback onOpenMyTemplates;
   final VoidCallback onUpdateAvatar;
   final UserInfoStatus userInfoStatus;
   final UserInfoEntity? userInfo;
@@ -98,6 +102,7 @@ class _ProfileView extends StatelessWidget {
     required this.openPrivacyPolicy,
     required this.onOpenSettings,
     required this.onOpenSubs,
+    required this.onOpenMyTemplates,
     required this.onUpdateAvatar,
     required this.userInfoStatus,
     required this.username,
@@ -242,6 +247,14 @@ class _ProfileView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
+            SelectionButton(
+              onPressed: onOpenMyTemplates,
+              text: context.l10n.my_templates,
+              padding: EdgeInsets.symmetric(
+                horizontal: mediaQuery.size.width * 0.1,
+              ),
+            ),
+            const SizedBox(height: 24),
             SelectionButton(
               onPressed: onOpenSubs,
               text: context.l10n.subscription,

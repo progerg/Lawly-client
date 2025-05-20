@@ -85,5 +85,10 @@
   "no_success_update_avatar": "Не удалось обновить аватар",
   "no_success_load_avatar": "Не удалось загрузить аватар",
   "error_when_improve_text": "Ошибка при улучшении текста",
-  "perform_with_ai": "Улучшение с AI"
+  "perform_with_ai": "Улучшение с AI",
+  "my_templates": "Мои шаблоны",
+  "from": "от",
+  "empty_template": "Пустой шаблон",
+  "uncorrect_request": "Неверные параметры запроса",
+  "server_error": "Ошибка сервера"
 }

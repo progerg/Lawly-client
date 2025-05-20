@@ -7,7 +7,6 @@ import 'package:lawly/assets/res/common_icons.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/common/widgets/lawly_circular_indicator.dart';
 import 'package:lawly/features/common/widgets/lawly_error_connection.dart';
-import 'package:lawly/features/common/widgets/unfocus_gesture_detector.dart';
 import 'package:lawly/features/templates/domain/entity/template_entity.dart';
 import 'package:lawly/features/templates/presentation/screens/templates_screen/templates_screen_wm.dart';
 import 'package:lawly/l10n/l10n.dart';
@@ -43,6 +42,7 @@ class TemplatesScreenWidget
                 onTemplateTap: wm.onTemplateTap,
                 templates: data,
                 onSearchQueryChanged: wm.onSearchQueryChanged,
+                onAddToMyTemplates: wm.onAddToMyTemplates,
                 scrollController: wm.scrollController,
                 isLoading: wm.isLoading,
               ),
@@ -66,6 +66,7 @@ class _TemplatesView extends StatelessWidget {
   final List<TemplateEntity> templates;
   final bool canCreateCustomTemplates;
   final void Function(String) onSearchQueryChanged;
+  final void Function(TemplateEntity) onAddToMyTemplates;
   final ScrollController scrollController;
   final bool isLoading;
 
@@ -75,6 +76,7 @@ class _TemplatesView extends StatelessWidget {
     required this.onTemplateTap,
     required this.canCreateCustomTemplates,
     required this.onSearchQueryChanged,
+    required this.onAddToMyTemplates,
     required this.scrollController,
     required this.isLoading,
   });
@@ -167,6 +169,7 @@ class _TemplatesView extends StatelessWidget {
                 return _TemplateCard(
                   template: template,
                   onTemplateTap: () => onTemplateTap(template),
+                  onAddToMyTemplates: () => onAddToMyTemplates(template),
                 );
               },
             ),
@@ -202,19 +205,28 @@ class _SliverSearchDelegate extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => false;
 }
 
-class _TemplateCard extends StatelessWidget {
+class _TemplateCard extends StatefulWidget {
   final VoidCallback onTemplateTap;
   final TemplateEntity template;
+  final VoidCallback onAddToMyTemplates;
 
   const _TemplateCard({
     required this.template,
     required this.onTemplateTap,
+    required this.onAddToMyTemplates,
   });
+
+  @override
+  State<_TemplateCard> createState() => _TemplateCardState();
+}
+
+class _TemplateCardState extends State<_TemplateCard> {
+  bool isAddedToMyTemplates = false;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTemplateTap,
+      onTap: widget.onTemplateTap,
       child: Stack(
         children: [
           Container(
@@ -230,9 +242,9 @@ class _TemplateCard extends StatelessWidget {
                       child: Container(
                         color: lightGray,
                         width: double.infinity,
-                        child: template.imageUrl.isNotEmpty
+                        child: widget.template.imageUrl.isNotEmpty
                             ? Image.network(
-                                template.imageUrl,
+                                widget.template.imageUrl,
                                 // 'https://s.rnk.ru/images/new_kart/07_03_2025/opis_dokov.webp',
                                 fit: BoxFit.cover,
                                 errorBuilder: (_, __, ___) => const SizedBox(),
@@ -246,7 +258,7 @@ class _TemplateCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            template.nameRu,
+                            widget.template.nameRu,
                             style: textBold14DarkBlueW700,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
@@ -270,14 +282,31 @@ class _TemplateCard extends StatelessWidget {
             top: 0,
             right: 0,
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                widget.onAddToMyTemplates();
+
+                setState(() {
+                  isAddedToMyTemplates = true;
+                });
+
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  if (mounted) {
+                    setState(() {
+                      isAddedToMyTemplates = false;
+                    });
+                  }
+                });
+              },
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: CircleAvatar(
                   radius: 16,
-                  backgroundColor: darkBlue,
+                  backgroundColor: isAddedToMyTemplates ? white : darkBlue,
                   child: SvgPicture.asset(
                     CommonIcons.bookmarkIcon,
+                    colorFilter: isAddedToMyTemplates
+                        ? ColorFilter.mode(darkBlue, BlendMode.srcIn)
+                        : ColorFilter.mode(white, BlendMode.srcIn),
                   ),
                 ),
               ),

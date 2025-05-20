@@ -63,7 +63,7 @@ abstract class TemplatesRemoteDataSource {
   @POST(TemplatesEndpoints.customTemplate)
   @DioResponseType(ResponseType.bytes)
   Future<List<int>> customTemplate({
-    @Query('description') String? description,
+    @Field('description') String? description,
     @Header('Accept') required String contentType,
   });
 

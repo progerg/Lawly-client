@@ -105,6 +105,11 @@ class TemplateEditFieldScreenWidgetModel extends WidgetModel<
   }
 
   @override
+  void goBack() {
+    stackRouter.pop();
+  }
+
+  @override
   Future<void> onImproveText() async {
     try {
       _showLoaderOverlay();
@@ -120,11 +125,6 @@ class TemplateEditFieldScreenWidgetModel extends WidgetModel<
       _hideLoaderOverlay();
       onErrorHandle(e);
     }
-  }
-
-  @override
-  void goBack() {
-    stackRouter.pop();
   }
 
   void _showLoaderOverlay() {

@@ -5,6 +5,8 @@ class AppConfig {
 
   final String docServiceUrl;
 
+  final String chatServiceUrl;
+
   final String apiSecretKey;
 
   final String? proxyUrl;
@@ -12,17 +14,20 @@ class AppConfig {
   AppConfig({
     required this.userServiceUrl,
     required this.docServiceUrl,
+    required this.chatServiceUrl,
     this.proxyUrl,
   }) : apiSecretKey = '';
 
   AppConfig copyWith({
     String? userServiceUrl,
     String? docServiceUrl,
+    String? chatServiceUrl,
     String? proxyUrl,
   }) =>
       AppConfig(
         userServiceUrl: userServiceUrl ?? this.userServiceUrl,
         docServiceUrl: docServiceUrl ?? this.docServiceUrl,
+        chatServiceUrl: chatServiceUrl ?? this.chatServiceUrl,
         proxyUrl: proxyUrl ?? this.proxyUrl,
       );
 

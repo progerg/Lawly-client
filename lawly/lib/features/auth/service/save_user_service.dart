@@ -1,6 +1,7 @@
 import 'package:lawly/features/auth/repository/save_user_repository.dart';
 import 'package:lawly/features/common/domain/entity/user_entity.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
+import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';
 
 class SaveUserService {
   final ISaveUserRepository _saveUserRepository;
@@ -25,6 +26,20 @@ class SaveUserService {
 
   List<DocEntity> getPersonalDocuments() {
     return _saveUserRepository.getPersonalDocuments();
+  }
+
+  Future<void> saveLocalTemplates({
+    required LocalTemplateEntity template,
+  }) async {
+    return await _saveUserRepository.saveLocalTemplates(template: template);
+  }
+
+  Future<void> removeLocalTemplate({required int id}) async {
+    return await _saveUserRepository.removeLocalTemplate(id: id);
+  }
+
+  Future<List<LocalTemplateEntity>> getLocalTemplates() async {
+    return _saveUserRepository.getLocalTemplates();
   }
 
   Future<void> saveUserAvatarPath(String path) async {

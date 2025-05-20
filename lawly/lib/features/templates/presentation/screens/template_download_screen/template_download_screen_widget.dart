@@ -13,11 +13,13 @@ import 'package:lawly/l10n/l10n.dart';
 class TemplateDownloadScreenWidget
     extends ElementaryWidget<ITemplateDownloadScreenWidgetModel> {
   final String filePath;
+  final List<int>? fileBytes;
   final String? imageUrl;
 
   const TemplateDownloadScreenWidget({
     Key? key,
     required this.filePath,
+    required this.fileBytes,
     this.imageUrl,
     WidgetModelFactory wmFactory =
         defaultTemplateDownloadScreenWidgetModelFactory,
@@ -55,6 +57,7 @@ class TemplateDownloadScreenWidget
         onDownload: wm.onDownload,
         imageUrl: imageUrl,
         controller: wm.controller,
+        onSendLawyer: wm.onSendLawyer,
       ),
     );
   }
@@ -64,11 +67,13 @@ class _TemplateDownloadView extends StatelessWidget {
   final VoidCallback onDownload;
   final String? imageUrl;
   final TextEditingController controller;
+  final VoidCallback onSendLawyer;
 
   const _TemplateDownloadView({
     required this.onDownload,
     required this.imageUrl,
     required this.controller,
+    required this.onSendLawyer,
   });
 
   @override
@@ -187,7 +192,7 @@ class _TemplateDownloadView extends StatelessWidget {
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.8,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: onSendLawyer,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: white,
                               foregroundColor: darkBlue,

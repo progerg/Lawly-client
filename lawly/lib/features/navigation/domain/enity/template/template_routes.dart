@@ -26,10 +26,12 @@ PageRouteInfo createTemplateNoAuthRoute({
 
 PageRouteInfo createTemplateDownloadRoute({
   required String filePath,
+  required List<int>? fileBytes,
   String? imageUrl,
 }) =>
     TemplateDownloadRoute(
       filePath: filePath,
+      fileBytes: fileBytes,
       imageUrl: imageUrl,
     );
 
