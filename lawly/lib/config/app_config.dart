@@ -7,6 +7,8 @@ class AppConfig {
 
   final String chatServiceUrl;
 
+  final String webSockerUrl;
+
   final String apiSecretKey;
 
   final String? proxyUrl;
@@ -15,6 +17,7 @@ class AppConfig {
     required this.userServiceUrl,
     required this.docServiceUrl,
     required this.chatServiceUrl,
+    required this.webSockerUrl,
     this.proxyUrl,
   }) : apiSecretKey = '';
 
@@ -22,12 +25,14 @@ class AppConfig {
     String? userServiceUrl,
     String? docServiceUrl,
     String? chatServiceUrl,
+    String? webSockerUrl,
     String? proxyUrl,
   }) =>
       AppConfig(
         userServiceUrl: userServiceUrl ?? this.userServiceUrl,
         docServiceUrl: docServiceUrl ?? this.docServiceUrl,
         chatServiceUrl: chatServiceUrl ?? this.chatServiceUrl,
+        webSockerUrl: webSockerUrl ?? this.webSockerUrl,
         proxyUrl: proxyUrl ?? this.proxyUrl,
       );
 

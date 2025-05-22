@@ -17,6 +17,7 @@ void main() async {
       userServiceUrl: BaseUrls.userServiceProd,
       docServiceUrl: BaseUrls.docServiceProd,
       chatServiceUrl: BaseUrls.chatServiceProd,
+      webSockerUrl: BaseUrls.webSocketUrlProd,
     ),
   );
 

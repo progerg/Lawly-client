@@ -6,6 +6,7 @@ import 'package:lawly/api/data_sources/local/init_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
 import 'package:lawly/api/data_sources/remote/chat_service/chat_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/chat_service/web_socket_service.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/generate_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/templates_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
@@ -118,6 +119,8 @@ abstract class IAppScope {
   ChatRepository get chatRepository;
 
   ChatService get chatService;
+
+  WebSocketService get webSocketService;
 
   void dispose();
 
@@ -240,6 +243,9 @@ class AppScope implements IAppScope {
   late final ChatService chatService;
 
   @override
+  late final WebSocketService webSocketService;
+
+  @override
   void dispose() {}
 
   @override
@@ -324,6 +330,11 @@ class AppScope implements IAppScope {
         subBloc: subBloc,
         appRouter: router,
       ),
+    );
+
+    webSocketService = WebSocketService(
+      tokenLocalDataSource: tokenLocalDataSource,
+      baseURl: env.config.webSockerUrl,
     );
 
     documentsRemoteDataSource = DocumentsRemoteDataSource(dioUserService);

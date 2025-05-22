@@ -11,8 +11,10 @@ import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/p
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_widget.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_wm.dart';
 import 'package:lawly/features/chat/presentation/chat_root_screen.dart';
-import 'package:lawly/features/chat/presentation/screens/chat_screen_widget.dart';
-import 'package:lawly/features/chat/presentation/screens/chat_screen_wm.dart';
+import 'package:lawly/features/chat/presentation/screens/ai_chat_screen/chat_screen_widget.dart';
+import 'package:lawly/features/chat/presentation/screens/ai_chat_screen/chat_screen_wm.dart';
+import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_widget.dart';
+import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_wm.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
 import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';

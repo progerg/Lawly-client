@@ -25,5 +25,11 @@ class CommonIcons {
 
   static const String checkboxIcon = '$_basePath/checkbox.svg';
 
+  static const String botIcon = '$_basePath/bot.svg';
+
+  static const String lawyerIcon = '$_basePath/lawyer.svg';
+
+  static const String fileIcon = '$_basePath/file.svg';
+
   static const String _basePath = 'assets/icons/common';
 }

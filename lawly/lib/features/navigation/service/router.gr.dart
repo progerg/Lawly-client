@@ -385,6 +385,55 @@ class BaseRouter extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [LawyerChatScreenWidget]
+class LawyerChatRoute extends PageRouteInfo<LawyerChatRouteArgs> {
+  LawyerChatRoute({
+    Key? key,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultLawyerChatScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         LawyerChatRoute.name,
+         args: LawyerChatRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
+
+  static const String name = 'LawyerChatRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<LawyerChatRouteArgs>(
+        orElse: () => const LawyerChatRouteArgs(),
+      );
+      return LawyerChatScreenWidget(key: args.key, wmFactory: args.wmFactory);
+    },
+  );
+}
+
+class LawyerChatRouteArgs {
+  const LawyerChatRouteArgs({
+    this.key,
+    this.wmFactory = defaultLawyerChatScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'LawyerChatRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [MyTemplateScreenWidget]
 class MyTemplateRoute extends PageRouteInfo<MyTemplateRouteArgs> {
   MyTemplateRoute({

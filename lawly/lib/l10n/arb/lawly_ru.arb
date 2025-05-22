@@ -90,5 +90,14 @@
   "from": "от",
   "empty_template": "Пустой шаблон",
   "uncorrect_request": "Неверные параметры запроса",
-  "server_error": "Ошибка сервера"
+  "server_error": "Ошибка сервера",
+  "ai_consult": "ИИ-консультант",
+  "lawyers_feedbacks": "Ответы юристов",
+  "message": "Сообщение",
+  "today": "Сегодня",
+  "go_to_lawyer_chat": "Перейти в чат с юристом",
+  "go_to_chat_bot": "Перейти в чат с ботом",
+  "access_banned": "Доступ запрещен",
+  "no_sub_with_functions": "Нет активной подписки с такими функциями",
+  "requests_not_found": "Заявки не найдены"
 }
