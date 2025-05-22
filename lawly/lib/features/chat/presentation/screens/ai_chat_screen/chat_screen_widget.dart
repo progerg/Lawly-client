@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lawly/assets/colors/colors.dart';
+import 'package:lawly/assets/res/common_icons.dart';
 import 'package:lawly/assets/themes/text_style.dart';
 import 'package:lawly/features/chat/domain/entity/message_entity.dart';
 import 'package:lawly/features/chat/presentation/screens/ai_chat_screen/chat_screen_wm.dart';
@@ -41,6 +45,7 @@ class ChatScreenWidget extends ElementaryWidget<IChatScreenWidgetModel> {
             onGoToLawyerChatScreen: wm.onGoToLawyerChatScreen,
             onSend: wm.onSend,
             textController: wm.textController,
+            isBotTyping: wm.isBotTyping,
             messages: data,
           );
         },
@@ -51,6 +56,7 @@ class ChatScreenWidget extends ElementaryWidget<IChatScreenWidgetModel> {
               onGoToLawyerChatScreen: wm.onGoToLawyerChatScreen,
               onSend: wm.onSend,
               textController: wm.textController,
+              isBotTyping: wm.isBotTyping,
               messages: data,
             );
           }
@@ -63,6 +69,7 @@ class ChatScreenWidget extends ElementaryWidget<IChatScreenWidgetModel> {
               onGoToLawyerChatScreen: wm.onGoToLawyerChatScreen,
               onSend: wm.onSend,
               textController: wm.textController,
+              isBotTyping: wm.isBotTyping,
               messages: data,
             );
           }
@@ -79,6 +86,7 @@ class _AiChatView extends StatelessWidget {
   final ScrollController scrollController;
   final TextEditingController textController;
   final List<MessageEntity> messages;
+  final ValueNotifier<bool> isBotTyping;
 
   const _AiChatView({
     required this.onGoToLawyerChatScreen,
@@ -86,54 +94,121 @@ class _AiChatView extends StatelessWidget {
     required this.scrollController,
     required this.textController,
     required this.messages,
+    required this.isBotTyping,
   });
 
   @override
   Widget build(BuildContext context) {
-    return UnfocusGestureDetector(
-      child: Center(
-        child: Column(
-          children: [
-            /// кнопка "Перейти к юристу"
-            Align(
-              alignment: Alignment.centerRight,
-              child: NavigationChatButton(
-                text: context.l10n.go_to_lawyer_chat,
-                onTap: onGoToLawyerChatScreen,
-                arrowDirection: ArrowDirection.left,
+    return ValueListenableBuilder<bool>(
+        valueListenable: isBotTyping,
+        builder: (context, isBotTypingData, child) {
+          return UnfocusGestureDetector(
+            child: Center(
+              child: Column(
+                children: [
+                  /// кнопка "Перейти к юристу"
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: NavigationChatButton(
+                      text: context.l10n.go_to_lawyer_chat,
+                      onTap: onGoToLawyerChatScreen,
+                      arrowDirection: ArrowDirection.left,
+                    ),
+                  ),
+
+                  /// сообщения
+                  Expanded(
+                    child: ListView.builder(
+                      reverse: true,
+                      controller: scrollController,
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final message = messages[index];
+
+                        if (message.senderType == 'ai' ||
+                            message.senderType == 'bot') {
+                          return BotMessage(
+                            message: message,
+                          );
+                        }
+                        return UserMessage(
+                          message: message,
+                          isBotTyping: isBotTypingData && index == 0,
+                        );
+                      },
+                    ),
+                  ),
+
+                  /// поле ввода сообщения
+                  MessageInputField(
+                    controller: textController,
+                    onSend: onSend,
+                  ),
+                ],
               ),
             ),
+          );
+        });
+  }
+}
 
-            /// сообщения
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                controller: scrollController,
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final message = messages[index];
-                  if (message.senderType == 'ai' ||
-                      message.senderType == 'bot') {
-                    return BotMessage(
-                      message: message,
-                    );
-                  }
-                  return UserMessage(
-                    message: message,
-                  );
-                },
-              ),
-            ),
+class TypewriterAnimatedDots extends StatefulWidget {
+  final Color color;
+  final double size;
 
-            /// поле ввода сообщения
-            MessageInputField(
-              controller: textController,
-              onSend: onSend,
-            ),
-          ],
-        ),
-      ),
+  const TypewriterAnimatedDots({
+    Key? key,
+    this.color = Colors.black54,
+    this.size = 16.0,
+  }) : super(key: key);
+
+  @override
+  State<TypewriterAnimatedDots> createState() => _TypewriterAnimatedDotsState();
+}
+
+class _TypewriterAnimatedDotsState extends State<TypewriterAnimatedDots>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  int _numDots = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _numDots = (_numDots + 1) % 4;
+          _controller.forward(from: 0.0);
+        }
+      });
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dots = '.' * _numDots;
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Text(
+          dots,
+          style: TextStyle(
+            fontSize: widget.size,
+            fontWeight: FontWeight.bold,
+            color: widget.color,
+          ),
+        );
+      },
     );
   }
 }

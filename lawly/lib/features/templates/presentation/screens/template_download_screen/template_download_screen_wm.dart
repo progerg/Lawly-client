@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -95,7 +96,7 @@ class TemplateDownloadScreenWidgetModel extends WidgetModel<
       } else {
         _scaffoldMessengerWrapper.showSnackBar(
           context,
-          context.l10n.unknown_error,
+          context.l10n.no_access_resource, // вместо неизвестной ошибки
         );
       }
     }
@@ -115,6 +116,8 @@ class TemplateDownloadScreenWidgetModel extends WidgetModel<
   @override
   Future<void> onSendLawyer() async {
     try {
+      AppMetrica.reportEvent('send_to_lawyer');
+
       final response = await model.createLawyerRequest(
         lawyerReqCreateEntity: LawyerReqCreateEntity(
           description: _controller.text,
@@ -122,6 +125,10 @@ class TemplateDownloadScreenWidgetModel extends WidgetModel<
         ),
       );
       log('response: $response');
+      _scaffoldMessengerWrapper.showSnackBar(
+        context,
+        context.l10n.sended_to_lawyer,
+      );
     } catch (e) {
       onErrorHandle(e);
     }

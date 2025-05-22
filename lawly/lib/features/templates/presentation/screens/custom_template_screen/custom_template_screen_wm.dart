@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -68,6 +70,8 @@ class CustomTemplateScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
+
+    unawaited(AppMetrica.reportEvent('custom_template_screen_open'));
   }
 
   @override
@@ -124,13 +128,15 @@ class CustomTemplateScreenWidgetModel
     try {
       _showLoaderOverlay();
 
+      await AppMetrica.reportEvent('custom_template_generate');
+
       final fileBytes = await model.customTemplate(
         description: _controller.text,
       );
 
       final directory = await _getDownloadDirectory();
       if (directory == null) {
-        _showErrorMessage(context.l10n.no_access_source);
+        _showErrorMessage(l10n.no_access_source);
         return;
       }
       // final firstWord = _controller.text.split(' ').first;

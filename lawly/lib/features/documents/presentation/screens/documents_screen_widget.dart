@@ -117,7 +117,19 @@ class _DocumentTile extends StatelessWidget {
                     flex: 1, // пропорционально занимает 1 часть (100%)
                     child: Row(
                       children: [
-                        SvgPicture.asset(CommonIcons.documentIcon),
+                        // SvgPicture.asset(CommonIcons.documentIcon),
+                        Image.network(
+                          document.link ?? '',
+                          width: 20,
+                          height: 20,
+                          errorBuilder: (context, error, stackTrace) {
+                            return SvgPicture.asset(
+                              CommonIcons.documentIcon,
+                              width: 24,
+                              height: 24,
+                            );
+                          },
+                        ),
                         const SizedBox(
                           width: 17,
                         ),

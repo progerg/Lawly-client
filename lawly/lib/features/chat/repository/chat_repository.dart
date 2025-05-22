@@ -5,6 +5,9 @@ import 'package:lawly/features/chat/domain/entity/lawyer_req_response_entity.dar
 import 'package:lawly/features/chat/domain/entity/total_lawyer_messages_entity.dart';
 import 'package:lawly/features/chat/domain/entity/total_messages_entity.dart';
 
+const String contentType =
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+
 abstract class IChatRepository {
   Future<LawyerReqResponseEntity> createLawyerRequest({
     required LawyerReqCreateEntity lawyerReqCreateEntity,
@@ -20,6 +23,10 @@ abstract class IChatRepository {
   Future<TotalLawyerMessagesEntity> getLawyerMessages({
     required String startDate,
     required String endDate,
+  });
+
+  Future<List<int>> getLawyerDocuments({
+    required int messageId,
   });
 }
 
@@ -64,11 +71,24 @@ class ChatRepository implements IChatRepository {
     required String endDate,
   }) async {
     // TODO:
-    // final data = await _chatRemoteDataSource.getLawyerDocuments(messageId: 26);
+    // final data = await _chatRemoteDataSource.getLawyerDocuments(
+    //     messageId: 26,
+    //     contentType:
+    //         'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
 
     return await _chatRemoteDataSource.getLawyerMessages(
       startDate: startDate,
       endDate: endDate,
+    );
+  }
+
+  @override
+  Future<List<int>> getLawyerDocuments({
+    required int messageId,
+  }) async {
+    return await _chatRemoteDataSource.getLawyerDocuments(
+      messageId: messageId,
+      contentType: contentType,
     );
   }
 }

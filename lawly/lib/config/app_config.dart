@@ -1,6 +1,8 @@
 import 'package:lawly/config/service/device_info_service.dart';
 
 class AppConfig {
+  /// AppMetrica API Key: 68b47b9c-dbe4-4072-848e-ab1aea423ce1
+
   final String userServiceUrl;
 
   final String docServiceUrl;
@@ -12,6 +14,8 @@ class AppConfig {
   final String apiSecretKey;
 
   final String? proxyUrl;
+
+  final String appMetricaKey = '68b47b9c-dbe4-4072-848e-ab1aea423ce1';
 
   AppConfig({
     required this.userServiceUrl,

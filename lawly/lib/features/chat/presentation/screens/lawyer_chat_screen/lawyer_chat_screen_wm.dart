@@ -11,8 +11,12 @@ import 'package:lawly/features/chat/domain/entity/lawyer_message_entity.dart';
 import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_model.dart';
 import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_widget.dart';
 import 'package:lawly/l10n/l10n.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:union_state/union_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class ILawyerChatScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<List<LawyerMessageEntity>> get lawyerMessagesState;
@@ -35,6 +39,7 @@ LawyerChatScreenWidgetModel defaultLawyerChatScreenWidgetModelFactory(
   return LawyerChatScreenWidgetModel(
     model,
     stackRouter: context.router,
+    l10n: context.l10n,
     scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
@@ -43,6 +48,7 @@ class LawyerChatScreenWidgetModel
     extends WidgetModel<LawyerChatScreenWidget, LawyerChatScreenModel>
     implements ILawyerChatScreenWidgetModel {
   final StackRouter stackRouter;
+  final AppLocalizations l10n;
 
   final _lawyerMessagesState =
       UnionStateNotifier<List<LawyerMessageEntity>>.loading();
@@ -68,6 +74,7 @@ class LawyerChatScreenWidgetModel
   LawyerChatScreenWidgetModel(
     super.model, {
     required this.stackRouter,
+    required this.l10n,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
@@ -131,7 +138,45 @@ class LawyerChatScreenWidgetModel
 
   @override
   Future<void> onOpenFile(int messageId) async {
-    // TODO
+    _showLoaderOverlay();
+
+    try {
+      final fileBytes = await model.getLawyerDocuments(messageId: messageId);
+
+      final directory = await _getDownloadDirectory();
+
+      final newFilePath =
+          '${directory!.path}/${l10n.doc_from_lawyer} ${DateTime.now().millisecondsSinceEpoch}.docx';
+      final newFile = File(newFilePath);
+      await newFile.writeAsBytes(fileBytes);
+
+      _hideLoaderOverlay();
+
+      await OpenFile.open(newFilePath);
+    } catch (e) {
+      _hideLoaderOverlay();
+      _scaffoldMessengerWrapper.showSnackBar(
+        context,
+        l10n.file_open_error,
+      );
+    }
+  }
+
+  Future<Directory?> _getDownloadDirectory() async {
+    if (Platform.isAndroid) {
+      return await getExternalStorageDirectory();
+    } else if (Platform.isIOS) {
+      return await getApplicationDocumentsDirectory();
+    }
+    return await getDownloadsDirectory();
+  }
+
+  void _showLoaderOverlay() {
+    context.loaderOverlay.show();
+  }
+
+  void _hideLoaderOverlay() {
+    context.loaderOverlay.hide();
   }
 
   void _setupScrollListener() {
@@ -166,6 +211,17 @@ class LawyerChatScreenWidgetModel
         _offset += model.defaultLimit;
       } else {
         // Если больше нет сообщений, просто возвращаем текущий список
+        if (totalMessages.responses.isEmpty && previousData == null) {
+          _lawyerMessagesState.content(
+            [
+              LawyerMessageEntity(
+                messageId: -2,
+                note: l10n.lawyer_welocome,
+                hasFile: false,
+              ),
+            ],
+          );
+        }
         if (previousData != null) {
           _lawyerMessagesState.content(previousData);
         }
@@ -182,7 +238,15 @@ class LawyerChatScreenWidgetModel
       //     .where((msg) => !existingIds.contains(msg.messageId))
       //     .toList();
       List<LawyerMessageEntity> updatedMessages;
-      if (previousData != null) {
+      if (oldMessages.isEmpty && previousData == null) {
+        updatedMessages = [
+          LawyerMessageEntity(
+            messageId: -2,
+            note: l10n.lawyer_welocome,
+            hasFile: false,
+          ),
+        ];
+      } else if (previousData != null) {
         updatedMessages = [
           ...previousData,
           // ...uniqueMessages,

@@ -33,7 +33,9 @@ abstract class ChatRemoteDataSource {
   });
 
   @GET(ChatEndpoints.lawyerDocuments)
-  Future<String> getLawyerDocuments({
+  @DioResponseType(ResponseType.bytes)
+  Future<List<int>> getLawyerDocuments({
     @Query('message_id') required int messageId,
+    @Header('Accept') required String contentType,
   });
 }

@@ -15,9 +15,12 @@ import 'package:lawly/features/navigation/domain/enity/chat/chat_routes.dart';
 import 'package:lawly/l10n/l10n.dart';
 import 'package:provider/provider.dart';
 import 'package:union_state/union_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class IChatScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<List<MessageEntity>> get messagesState;
+
+  ValueNotifier<bool> get isBotTyping;
 
   ScrollController get scrollController;
 
@@ -41,6 +44,7 @@ ChatScreenWidgetModel defaultChatScreenWidgetModelFactory(
   return ChatScreenWidgetModel(
     model,
     stackRouter: context.router,
+    l10n: context.l10n,
     scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
@@ -49,6 +53,7 @@ class ChatScreenWidgetModel
     extends WidgetModel<ChatScreenWidget, ChatScreenModel>
     implements IChatScreenWidgetModel {
   final StackRouter stackRouter;
+  final AppLocalizations l10n;
 
   final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
@@ -65,6 +70,8 @@ class ChatScreenWidgetModel
   // Добавляем подписку на WebSocket
   StreamSubscription? _webSocketSubscription;
 
+  final ValueNotifier<bool> _isBotTyping = ValueNotifier(false);
+
   @override
   String get title => context.l10n.ai_consult;
 
@@ -77,9 +84,13 @@ class ChatScreenWidgetModel
   @override
   TextEditingController get textController => _textController;
 
+  @override
+  ValueNotifier<bool> get isBotTyping => _isBotTyping;
+
   ChatScreenWidgetModel(
     super.model, {
     required this.stackRouter,
+    required this.l10n,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
@@ -137,6 +148,7 @@ class ChatScreenWidgetModel
     _webSocketSubscription?.cancel();
     _scrollController.dispose();
     _textController.dispose();
+    _isBotTyping.dispose();
     super.dispose();
   }
 
@@ -181,7 +193,7 @@ class ChatScreenWidgetModel
       log('Ошибка отправки сообщения: $e');
       _scaffoldMessengerWrapper.showSnackBar(
         context,
-        context.l10n.error_connection_problems,
+        l10n.error_connection_problems,
       );
     }
 
@@ -239,7 +251,7 @@ class ChatScreenWidgetModel
           log('WebSocket error: $error');
           _scaffoldMessengerWrapper.showSnackBar(
             context,
-            context.l10n.error_connection_problems,
+            l10n.error_connection_problems,
           );
         },
       );
@@ -270,6 +282,7 @@ class ChatScreenWidgetModel
           final status = data['status'] as String?;
 
           log('Message $messageId status: $status');
+          _startBotTyping();
           break;
 
         // Обработка ответа от ИИ
@@ -279,6 +292,7 @@ class ChatScreenWidgetModel
           final content = data['content'] as String? ?? '';
 
           log('Received AI response for message $messageId');
+          _stopBotTyping();
           _handleAiResponse(messageId, userId, content);
           break;
 
@@ -288,10 +302,12 @@ class ChatScreenWidgetModel
           final errorCode = data['error_code']?.toString();
 
           log('WebSocket error: $errorMessage (code: $errorCode)');
+          _stopBotTyping();
           _handleServerError(errorMessage, errorCode);
           break;
 
         default:
+          _stopBotTyping();
           log('Unknown message type: $messageType');
       }
     } catch (e) {
@@ -332,14 +348,14 @@ class ChatScreenWidgetModel
     //   errorCode != null ? '$errorMessage (код: $errorCode)' : errorMessage,
     // );
 
-    log("Произошла ошибка при обработке запроса: $errorMessage");
+    log("${l10n.error_spawn_from_request}: $errorMessage");
 
     // Опционально: можно добавить сообщение от бота в чат с уведомлением о проблеме
     final botErrorMessage = MessageEntity(
       id: -2, // Специальный ID для системных сообщений
       senderType: "ai",
       senderId: 0,
-      content: "Произошла ошибка при обработке запроса",
+      content: l10n.error_spawn_from_request,
       createdAt: DateTime.now().toIso8601String(),
       status: "error",
     );
@@ -350,6 +366,16 @@ class ChatScreenWidgetModel
     } else {
       _messagesState.content([botErrorMessage]);
     }
+  }
+
+  /// Показать индикатор набора текста ботом
+  void _startBotTyping() {
+    _isBotTyping.value = true;
+  }
+
+  /// Скрыть индикатор набора текста ботом
+  void _stopBotTyping() {
+    _isBotTyping.value = false;
   }
 
   Future<void> _loadMessages() async {
@@ -370,7 +396,20 @@ class ChatScreenWidgetModel
         _offset += model.defaultLimit;
       } else {
         // Если больше нет сообщений, просто возвращаем текущий список
-        if (previousData != null) {
+        if (totalMessages.messages.isEmpty && previousData == null) {
+          _messagesState.content(
+            [
+              MessageEntity(
+                id: -2,
+                senderType: "ai",
+                senderId: 0,
+                content: l10n.ai_bot_welcome,
+                createdAt: DateTime.now().toIso8601String(),
+                status: "delivered",
+              ),
+            ],
+          );
+        } else if (previousData != null) {
           _messagesState.content(previousData);
         }
         _isLoadingMessages = false;
@@ -384,7 +423,18 @@ class ChatScreenWidgetModel
       final uniqueMessages =
           oldMessages.where((msg) => !existingIds.contains(msg.id)).toList();
       List<MessageEntity> updatedMessages;
-      if (previousData != null) {
+      if (oldMessages.isEmpty && previousData == null) {
+        updatedMessages = [
+          MessageEntity(
+            id: -2,
+            senderType: "ai",
+            senderId: 0,
+            content: l10n.ai_bot_welcome,
+            createdAt: DateTime.now().toIso8601String(),
+            status: "delivered",
+          ),
+        ];
+      } else if (previousData != null) {
         updatedMessages = [
           ...previousData,
           ...uniqueMessages,

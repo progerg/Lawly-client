@@ -42,4 +42,12 @@ class ChatService {
       endDate: endDate,
     );
   }
+
+  Future<List<int>> getLawyerDocuments({
+    required int messageId,
+  }) async {
+    return await _chatRepository.getLawyerDocuments(
+      messageId: messageId,
+    );
+  }
 }

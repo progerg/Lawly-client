@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -119,6 +120,8 @@ class TemplateNoAuthScreenWidgetModel
     super.initWidgetModel();
 
     unawaited(_loadTemplate());
+
+    unawaited(AppMetrica.reportEvent('template_screen_opened'));
   }
 
   @override
@@ -309,9 +312,23 @@ class TemplateNoAuthScreenWidgetModel
         );
       }
 
+      final countAllFields = template.customFields?.length ?? 0;
+      final countFilledFields = customFields.length;
+
+      if (countFilledFields / countAllFields <= 0.2) {
+        AppMetrica.reportEvent('filled_fields_less_20_percent');
+      } else if (countFilledFields / countAllFields > 0.2 &&
+          countFilledFields / countAllFields <= 0.6) {
+        AppMetrica.reportEvent('filled_fields_less_60_percent');
+      } else if (countFilledFields / countAllFields == 1) {
+        AppMetrica.reportEvent('filled_fields_100_percent');
+      }
+
+      final allFields = [...customFields, ...documentFields];
+
       final generateRequest = GenerateReqEntity(
         templateId: template.id,
-        fields: customFields,
+        fields: allFields,
       );
 
       log('generateRequest: ${GenerateReqModel.fromEntity(generateRequest).toJson()}');
@@ -321,6 +338,8 @@ class TemplateNoAuthScreenWidgetModel
         customName: template.nameRu,
       );
       try {
+        AppMetrica.reportEvent('generate_template');
+
         await model.templateService.updateDocument(
           documentCreationId: response.id,
           status: DocumentCreationStatus.started,

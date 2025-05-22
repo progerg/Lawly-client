@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
@@ -83,6 +84,8 @@ class RegistrationScreenWidgetModel
   @override
   void initWidgetModel() {
     super.initWidgetModel();
+
+    AppMetrica.reportEvent('registration_screen_opened');
   }
 
   @override
@@ -204,6 +207,8 @@ class RegistrationScreenWidgetModel
       //     tariffId: tariff.id,
       //   ); // выбираем базовый тариф при регистрации
       // }
+
+      await AppMetrica.reportEvent('registration_completed');
 
       await model.saveUserService.saveAuthUser(entity: user);
 

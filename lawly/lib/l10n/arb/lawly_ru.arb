@@ -99,5 +99,12 @@
   "go_to_chat_bot": "Перейти в чат с ботом",
   "access_banned": "Доступ запрещен",
   "no_sub_with_functions": "Нет активной подписки с такими функциями",
-  "requests_not_found": "Заявки не найдены"
+  "requests_not_found": "Заявки не найдены",
+  "error_spawn_from_request": "Произошла ошибка при обработке запроса",
+  "ai_bot_welcome": "Привет! Я твой персональный юрист. Чем могу помочь?",
+  "lawyer_welocome": "Здесь появляются ответы юристов.",
+  "ai_typing": "AI печатает",
+  "doc_from_lawyer": "Документ от юриста",
+  "file_open_error": "Ошибка при открытии файла",
+  "sended_to_lawyer": "Отправлено юристу"
 }

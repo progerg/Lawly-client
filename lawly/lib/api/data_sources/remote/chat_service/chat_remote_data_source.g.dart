@@ -119,13 +119,22 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
   }
 
   @override
-  Future<String> getLawyerDocuments({required int messageId}) async {
+  Future<List<int>> getLawyerDocuments({
+    required int messageId,
+    required String contentType,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'message_id': messageId};
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'Accept': contentType};
+    _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<String>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
+    final _options = _setStreamType<List<int>>(
+      Options(
+        method: 'GET',
+        headers: _headers,
+        extra: _extra,
+        responseType: ResponseType.bytes,
+      )
           .compose(
             _dio.options,
             '/api/v1/chat/lawyer/document',
@@ -134,10 +143,10 @@ class _ChatRemoteDataSource implements ChatRemoteDataSource {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    final _result = await _dio.fetch<String>(_options);
-    late String _value;
+    final _result = await _dio.fetch<List<dynamic>>(_options);
+    late List<int> _value;
     try {
-      _value = _result.data!;
+      _value = _result.data!.cast<int>();
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
