@@ -5,6 +5,8 @@ import 'package:dio/io.dart';
 import 'package:lawly/api/data_sources/local/init_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
+import 'package:lawly/api/data_sources/remote/chat_service/chat_remote_data_source.dart';
+import 'package:lawly/api/data_sources/remote/chat_service/web_socket_service.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/generate_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/doc_service/templates_remote_data_source.dart';
 import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
@@ -21,6 +23,8 @@ import 'package:lawly/features/auth/repository/auth_repository.dart';
 import 'package:lawly/features/auth/repository/save_user_repository.dart';
 import 'package:lawly/features/auth/service/auth_service.dart';
 import 'package:lawly/features/auth/service/save_user_service.dart';
+import 'package:lawly/features/chat/repository/chat_repository.dart';
+import 'package:lawly/features/chat/service/chat_service.dart';
 import 'package:lawly/features/documents/repository/documents_repository.dart';
 import 'package:lawly/features/documents/repository/personal_documents_repository.dart';
 import 'package:lawly/features/documents/service/documents_service.dart';
@@ -43,6 +47,8 @@ abstract class IAppScope {
   Dio get dioUserService;
 
   Dio get dioDocService;
+
+  Dio get dioChatService;
 
   AppRouter get router;
 
@@ -108,6 +114,14 @@ abstract class IAppScope {
 
   GenerateRemoteDataSource get generateRemoteDataSource;
 
+  ChatRemoteDataSource get chatRemoteDataSource;
+
+  ChatRepository get chatRepository;
+
+  ChatService get chatService;
+
+  WebSocketService get webSocketService;
+
   void dispose();
 
   Future<void> init();
@@ -119,6 +133,9 @@ class AppScope implements IAppScope {
 
   @override
   late final Dio dioDocService;
+
+  @override
+  late final Dio dioChatService;
 
   @override
   late final AppRouter router;
@@ -217,6 +234,18 @@ class AppScope implements IAppScope {
   late final GenerateRemoteDataSource generateRemoteDataSource;
 
   @override
+  late final ChatRemoteDataSource chatRemoteDataSource;
+
+  @override
+  late final ChatRepository chatRepository;
+
+  @override
+  late final ChatService chatService;
+
+  @override
+  late final WebSocketService webSocketService;
+
+  @override
   void dispose() {}
 
   @override
@@ -232,6 +261,11 @@ class AppScope implements IAppScope {
 
     dioDocService = _initDio(
       baseUrl: env.config.docServiceUrl,
+      proxyUrl: env.config.proxyUrl,
+    );
+
+    dioChatService = _initDio(
+      baseUrl: env.config.chatServiceUrl,
       proxyUrl: env.config.proxyUrl,
     );
 
@@ -270,6 +304,7 @@ class AppScope implements IAppScope {
         dio: dioUserService,
         authRemoteDataSource: authRemoteDataSource,
         tokenLocalDataSource: tokenLocalDataSource,
+        saveUserLocalDataSource: saveUserLocalDataSource,
         authBloc: authBloc,
         subBloc: subBloc,
         appRouter: router,
@@ -281,10 +316,28 @@ class AppScope implements IAppScope {
         dio: dioDocService,
         authRemoteDataSource: authRemoteDataSource,
         tokenLocalDataSource: tokenLocalDataSource,
+        saveUserLocalDataSource: saveUserLocalDataSource,
         authBloc: authBloc,
         subBloc: subBloc,
         appRouter: router,
       ),
+    );
+
+    dioChatService.interceptors.add(
+      AuthInterceptor(
+        dio: dioChatService,
+        authRemoteDataSource: authRemoteDataSource,
+        tokenLocalDataSource: tokenLocalDataSource,
+        saveUserLocalDataSource: saveUserLocalDataSource,
+        authBloc: authBloc,
+        subBloc: subBloc,
+        appRouter: router,
+      ),
+    );
+
+    webSocketService = WebSocketService(
+      tokenLocalDataSource: tokenLocalDataSource,
+      baseURl: env.config.webSockerUrl,
     );
 
     documentsRemoteDataSource = DocumentsRemoteDataSource(dioUserService);
@@ -324,6 +377,14 @@ class AppScope implements IAppScope {
 
     templatesRemoteDataSource = TemplatesRemoteDataSource(dioDocService);
     generateRemoteDataSource = GenerateRemoteDataSource(dioDocService);
+
+    chatRemoteDataSource = ChatRemoteDataSource(dioChatService);
+    chatRepository = ChatRepository(
+      chatRemoteDataSource: chatRemoteDataSource,
+    );
+    chatService = ChatService(
+      chatRepository: chatRepository,
+    );
 
     personalDocumentsRepository = PersonalDocumentsRepository(
       templatesRemoteDataSource: templatesRemoteDataSource,

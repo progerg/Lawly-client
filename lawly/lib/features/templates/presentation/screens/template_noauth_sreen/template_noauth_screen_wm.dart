@@ -2,17 +2,20 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:elementary/elementary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:lawly/api/models/templates/document_creation_model.dart';
 import 'package:lawly/api/models/templates/generate_req_model.dart';
 import 'package:lawly/core/utils/wrappers/scaffold_messenger_wrapper.dart';
 import 'package:lawly/features/app/di/app_scope.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
+import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';
 import 'package:lawly/features/navigation/domain/enity/document/document_routes.dart';
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/router.dart';
@@ -26,6 +29,7 @@ import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:union_state/union_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 abstract class ITemplateNoAuthScreenWidgetModel implements IWidgetModel {
   UnionStateNotifier<TemplateEntity> get templateState;
@@ -68,6 +72,7 @@ TemplateNoAuthScreenWidgetModel defaultTemplateNoAuthScreenWidgetModelFactory(
     model,
     stackRouter: context.router,
     appRouter: appScope.router,
+    l10n: context.l10n,
     scaffoldMessengerWrapper: appScope.scaffoldMessengerWrapper,
   );
 }
@@ -77,6 +82,7 @@ class TemplateNoAuthScreenWidgetModel
     implements ITemplateNoAuthScreenWidgetModel {
   final StackRouter stackRouter;
   final AppRouter appRouter;
+  final AppLocalizations l10n;
   final ScaffoldMessengerWrapper _scaffoldMessengerWrapper;
 
   final _templateState = UnionStateNotifier<TemplateEntity>.loading();
@@ -105,6 +111,7 @@ class TemplateNoAuthScreenWidgetModel
     super.model, {
     required this.stackRouter,
     required this.appRouter,
+    required this.l10n,
     required ScaffoldMessengerWrapper scaffoldMessengerWrapper,
   }) : _scaffoldMessengerWrapper = scaffoldMessengerWrapper;
 
@@ -113,6 +120,8 @@ class TemplateNoAuthScreenWidgetModel
     super.initWidgetModel();
 
     unawaited(_loadTemplate());
+
+    unawaited(AppMetrica.reportEvent('template_screen_opened'));
   }
 
   @override
@@ -238,7 +247,7 @@ class TemplateNoAuthScreenWidgetModel
 
       final directory = await _getDownloadDirectory();
       if (directory == null) {
-        _showErrorMessage('Не удалось получить доступ к хранилищу устройства');
+        _showErrorMessage(l10n.no_access_source);
         return;
       }
       final newFilePath = '${directory.path}/${widget.template.name}.docx';
@@ -303,9 +312,23 @@ class TemplateNoAuthScreenWidgetModel
         );
       }
 
+      final countAllFields = template.customFields?.length ?? 0;
+      final countFilledFields = customFields.length;
+
+      if (countFilledFields / countAllFields <= 0.2) {
+        AppMetrica.reportEvent('filled_fields_less_20_percent');
+      } else if (countFilledFields / countAllFields > 0.2 &&
+          countFilledFields / countAllFields <= 0.6) {
+        AppMetrica.reportEvent('filled_fields_less_60_percent');
+      } else if (countFilledFields / countAllFields == 1) {
+        AppMetrica.reportEvent('filled_fields_100_percent');
+      }
+
+      final allFields = [...customFields, ...documentFields];
+
       final generateRequest = GenerateReqEntity(
         templateId: template.id,
-        fields: customFields,
+        fields: allFields,
       );
 
       log('generateRequest: ${GenerateReqModel.fromEntity(generateRequest).toJson()}');
@@ -315,6 +338,8 @@ class TemplateNoAuthScreenWidgetModel
         customName: template.nameRu,
       );
       try {
+        AppMetrica.reportEvent('generate_template');
+
         await model.templateService.updateDocument(
           documentCreationId: response.id,
           status: DocumentCreationStatus.started,
@@ -333,7 +358,8 @@ class TemplateNoAuthScreenWidgetModel
           _hideLoaderOverlay();
           return;
         }
-        final newFilePath = '${directory.path}/${template.nameRu}.docx';
+        final newFilePath =
+            '${directory.path}/${template.nameRu} ${DateTime.now().millisecondsSinceEpoch}.docx';
         final newFile = File(newFilePath);
         await newFile.writeAsBytes(fileBytes);
 
@@ -343,11 +369,23 @@ class TemplateNoAuthScreenWidgetModel
           errorMessage: response.errorMessage,
         );
 
+        await model.saveUserService.saveLocalTemplates(
+          template: LocalTemplateEntity(
+            templateId: DateTime.now().millisecondsSinceEpoch,
+            name:
+                '${template.nameRu} ${l10n.from} ${DateFormat('dd.MM.yy').format(DateTime.now())}',
+            filePath: newFilePath,
+            imageUrl: template.imageUrl,
+            isEmpty: false,
+          ),
+        );
+
         _hideLoaderOverlay();
 
         await stackRouter.push(
           createTemplateDownloadRoute(
             filePath: newFilePath,
+            fileBytes: fileBytes,
             imageUrl: template.imageUrl,
           ),
         );

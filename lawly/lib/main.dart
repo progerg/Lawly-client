@@ -16,6 +16,8 @@ void main() async {
     config: AppConfig(
       userServiceUrl: BaseUrls.userServiceProd,
       docServiceUrl: BaseUrls.docServiceProd,
+      chatServiceUrl: BaseUrls.chatServiceProd,
+      webSockerUrl: BaseUrls.webSocketUrlProd,
     ),
   );
 

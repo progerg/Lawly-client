@@ -11,10 +11,13 @@ import 'package:lawly/features/auth/presentation/screens/privacy_policy_screen/p
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_widget.dart';
 import 'package:lawly/features/auth/presentation/screens/registration_screen/registration_screen_wm.dart';
 import 'package:lawly/features/chat/presentation/chat_root_screen.dart';
-import 'package:lawly/features/chat/presentation/screens/chat_screen_widget.dart';
-import 'package:lawly/features/chat/presentation/screens/chat_screen_wm.dart';
+import 'package:lawly/features/chat/presentation/screens/ai_chat_screen/chat_screen_widget.dart';
+import 'package:lawly/features/chat/presentation/screens/ai_chat_screen/chat_screen_wm.dart';
+import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_widget.dart';
+import 'package:lawly/features/chat/presentation/screens/lawyer_chat_screen/lawyer_chat_screen_wm.dart';
 import 'package:lawly/features/documents/domain/entity/doc_entity.dart';
 import 'package:lawly/features/documents/domain/entity/field_entity.dart';
+import 'package:lawly/features/documents/domain/entity/local_template_entity.dart';
 import 'package:lawly/features/documents/presentation/documents_root_screen.dart';
 import 'package:lawly/features/documents/presentation/screens/document_edit_screen/document_edit_screen_widget.dart';
 import 'package:lawly/features/documents/presentation/screens/document_edit_screen/document_edit_screen_wm.dart';
@@ -32,6 +35,10 @@ import 'package:lawly/features/navigation/domain/enity/profile/profile_routes.da
 import 'package:lawly/features/navigation/domain/enity/template/template_routes.dart';
 import 'package:lawly/features/navigation/service/guards/auth_guard.dart';
 import 'package:lawly/features/profile/presentation/profile_root_screen.dart';
+import 'package:lawly/features/profile/presentation/screens/my_template_screen/my_template_screen_widget.dart';
+import 'package:lawly/features/profile/presentation/screens/my_template_screen/my_template_screen_wm.dart';
+import 'package:lawly/features/profile/presentation/screens/my_templates_screen/my_templates_screen_widget.dart';
+import 'package:lawly/features/profile/presentation/screens/my_templates_screen/my_templates_screen_wm.dart';
 import 'package:lawly/features/profile/presentation/screens/profile_screen_widget.dart';
 import 'package:lawly/features/profile/presentation/screens/profile_screen_wm.dart';
 import 'package:lawly/features/profile/presentation/screens/settings_screen/settings_screen_widget.dart';

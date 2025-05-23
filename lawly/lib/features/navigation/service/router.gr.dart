@@ -385,6 +385,163 @@ class BaseRouter extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [LawyerChatScreenWidget]
+class LawyerChatRoute extends PageRouteInfo<LawyerChatRouteArgs> {
+  LawyerChatRoute({
+    Key? key,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultLawyerChatScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         LawyerChatRoute.name,
+         args: LawyerChatRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
+
+  static const String name = 'LawyerChatRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<LawyerChatRouteArgs>(
+        orElse: () => const LawyerChatRouteArgs(),
+      );
+      return LawyerChatScreenWidget(key: args.key, wmFactory: args.wmFactory);
+    },
+  );
+}
+
+class LawyerChatRouteArgs {
+  const LawyerChatRouteArgs({
+    this.key,
+    this.wmFactory = defaultLawyerChatScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'LawyerChatRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
+/// [MyTemplateScreenWidget]
+class MyTemplateRoute extends PageRouteInfo<MyTemplateRouteArgs> {
+  MyTemplateRoute({
+    Key? key,
+    required LocalTemplateEntity template,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultMyTemplateScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         MyTemplateRoute.name,
+         args: MyTemplateRouteArgs(
+           key: key,
+           template: template,
+           wmFactory: wmFactory,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'MyTemplateRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<MyTemplateRouteArgs>();
+      return MyTemplateScreenWidget(
+        key: args.key,
+        template: args.template,
+        wmFactory: args.wmFactory,
+      );
+    },
+  );
+}
+
+class MyTemplateRouteArgs {
+  const MyTemplateRouteArgs({
+    this.key,
+    required this.template,
+    this.wmFactory = defaultMyTemplateScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final LocalTemplateEntity template;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'MyTemplateRouteArgs{key: $key, template: $template, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
+/// [MyTemplatesScreenWidget]
+class MyTemplatesRoute extends PageRouteInfo<MyTemplatesRouteArgs> {
+  MyTemplatesRoute({
+    Key? key,
+    WidgetModelFactory<
+          WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+        >
+        wmFactory =
+        defaultMyTemplatesScreenWidgetModelFactory,
+    List<PageRouteInfo>? children,
+  }) : super(
+         MyTemplatesRoute.name,
+         args: MyTemplatesRouteArgs(key: key, wmFactory: wmFactory),
+         initialChildren: children,
+       );
+
+  static const String name = 'MyTemplatesRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<MyTemplatesRouteArgs>(
+        orElse: () => const MyTemplatesRouteArgs(),
+      );
+      return MyTemplatesScreenWidget(key: args.key, wmFactory: args.wmFactory);
+    },
+  );
+}
+
+class MyTemplatesRouteArgs {
+  const MyTemplatesRouteArgs({
+    this.key,
+    this.wmFactory = defaultMyTemplatesScreenWidgetModelFactory,
+  });
+
+  final Key? key;
+
+  final WidgetModelFactory<
+    WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
+  >
+  wmFactory;
+
+  @override
+  String toString() {
+    return 'MyTemplatesRouteArgs{key: $key, wmFactory: $wmFactory}';
+  }
+}
+
+/// generated route for
 /// [NavBarWidget]
 class HomeRouter extends PageRouteInfo<void> {
   const HomeRouter({List<PageRouteInfo>? children})
@@ -670,6 +827,7 @@ class TemplateDownloadRoute extends PageRouteInfo<TemplateDownloadRouteArgs> {
   TemplateDownloadRoute({
     Key? key,
     required String filePath,
+    required List<int>? fileBytes,
     String? imageUrl,
     WidgetModelFactory<
           WidgetModel<ElementaryWidget<IWidgetModel>, ElementaryModel>
@@ -682,6 +840,7 @@ class TemplateDownloadRoute extends PageRouteInfo<TemplateDownloadRouteArgs> {
          args: TemplateDownloadRouteArgs(
            key: key,
            filePath: filePath,
+           fileBytes: fileBytes,
            imageUrl: imageUrl,
            wmFactory: wmFactory,
          ),
@@ -697,6 +856,7 @@ class TemplateDownloadRoute extends PageRouteInfo<TemplateDownloadRouteArgs> {
       return TemplateDownloadScreenWidget(
         key: args.key,
         filePath: args.filePath,
+        fileBytes: args.fileBytes,
         imageUrl: args.imageUrl,
         wmFactory: args.wmFactory,
       );
@@ -708,6 +868,7 @@ class TemplateDownloadRouteArgs {
   const TemplateDownloadRouteArgs({
     this.key,
     required this.filePath,
+    required this.fileBytes,
     this.imageUrl,
     this.wmFactory = defaultTemplateDownloadScreenWidgetModelFactory,
   });
@@ -715,6 +876,8 @@ class TemplateDownloadRouteArgs {
   final Key? key;
 
   final String filePath;
+
+  final List<int>? fileBytes;
 
   final String? imageUrl;
 
@@ -725,7 +888,7 @@ class TemplateDownloadRouteArgs {
 
   @override
   String toString() {
-    return 'TemplateDownloadRouteArgs{key: $key, filePath: $filePath, imageUrl: $imageUrl, wmFactory: $wmFactory}';
+    return 'TemplateDownloadRouteArgs{key: $key, filePath: $filePath, fileBytes: $fileBytes, imageUrl: $imageUrl, wmFactory: $wmFactory}';
   }
 }
 

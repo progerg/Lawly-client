@@ -14,7 +14,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_localizations:
     sdk: flutter
-  intl: 0.19.0
+  intl: ^0.19.0
   flutter_native_splash: 2.4.6
   provider: 6.1.4
   dio: ^5.8.0+1
@@ -42,6 +42,11 @@ dependencies:
   loader_overlay: ^5.0.0
   flutter_spinkit: ^5.2.1
   image_picker: ^1.1.2
+  web_socket_channel: ^3.0.3
+  url_launcher: ^6.3.1
+  # appmetrica_plugin: ^3.2.0
+  appmetrica_plugin: 3.1.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +65,7 @@ flutter:
     - assets/images/
     - assets/images/welcome/
     - assets/icons/
+    - assets/icons/logo/
     - assets/icons/common/
     - assets/icons/bottom_nav_screen_icons/
 
@@ -91,3 +97,11 @@ flutter_native_splash:
     # Показываем белый экран на системном сплеше android 12+ 
     image: assets/images/logo_2.png
     color: "#F2EDE7"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_android: "assets/icons/logo/logo.png"
+  image_path_ios: "assets/icons/logo/logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true

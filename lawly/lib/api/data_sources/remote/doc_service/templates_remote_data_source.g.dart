@@ -270,11 +270,12 @@ class _TemplatesRemoteDataSource implements TemplatesRemoteDataSource {
     required String contentType,
   }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'description': description};
+    final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{r'Accept': contentType};
     _headers.removeWhere((k, v) => v == null);
-    const Map<String, dynamic>? _data = null;
+    final _data = {'description': description};
+    _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<List<int>>(
       Options(
         method: 'POST',

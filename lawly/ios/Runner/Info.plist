@@ -54,5 +54,7 @@
 		</dict>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>This app needs access to photo library to select avatar image</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Для сбора аналитики</string>
 	</dict>
 </plist>

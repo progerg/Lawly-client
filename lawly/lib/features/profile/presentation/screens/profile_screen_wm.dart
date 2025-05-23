@@ -42,6 +42,8 @@ abstract class IProfileScreenWidgetModel implements IWidgetModel {
 
   void onOpenSubs();
 
+  void onOpenMyTemplates();
+
   void onLogout();
 }
 
@@ -52,6 +54,7 @@ ProfileScreenWidgetModel defaultProfileScreenWidgetModelFactory(
     authBloc: appScope.authBloc,
     subBloc: appScope.subBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
+    saveUserLocalDataSource: appScope.saveUserLocalDataSource,
     authService: appScope.authService,
     userInfoService: appScope.userInfoService,
     saveUserService: appScope.saveUserService,
@@ -162,6 +165,11 @@ class ProfileScreenWidgetModel
   }
 
   @override
+  Future<void> onOpenMyTemplates() async {
+    await stackRouter.push(createMyTemplatesRoute());
+  }
+
+  @override
   Future<void> onUpdateAvatar() async {
     try {
       final ImagePicker picker = ImagePicker();
@@ -215,6 +223,8 @@ class ProfileScreenWidgetModel
       model.authBloc.add(AuthEvent.loggedOut());
 
       model.subBloc.add(SubEvent.removeSub());
+
+      await model.saveUserLocalDataSource.clearUserData();
 
       appRouter.push(const ProfileRouter());
     } on DioException catch (e) {

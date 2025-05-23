@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -37,6 +38,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
+
     _pageController = PageController();
     FlutterNativeSplash.remove();
   }
@@ -116,6 +118,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   Future<void> _executeFisrtLaunch() async {
+    // Первый запуск совершен
+    AppMetrica.reportEvent('first_launch');
+
     await _scope.initService.setFirstLaunch(false);
   }
 }

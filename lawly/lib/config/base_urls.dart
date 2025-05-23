@@ -6,6 +6,10 @@ abstract class BaseUrls {
 
   static String get docServiceProd => 'https://doc-service.lawly.ru';
 
+  static String get chatServiceProd => 'https://chat-service.lawly.ru';
+
+  static String get webSocketUrlProd => 'wss://chat-service.lawly.ru';
+
   static String get currentBaseUrl =>
       Environment<AppConfig>.instance().config.userServiceUrl;
 }

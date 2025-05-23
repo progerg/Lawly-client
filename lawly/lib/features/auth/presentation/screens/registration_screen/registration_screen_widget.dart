@@ -204,6 +204,7 @@ class _RegistrationFormState extends State<_RegistrationForm> {
                 horizontal: mediaQuery.size.width * 0.1,
               ),
             ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
