@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "704619062811",
+    "project_id": "lawly-cb472",
+    "storage_bucket": "lawly-cb472.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704619062811:android:742dca96146936df8f7abe",
+        "android_client_info": {
+          "package_name": "com.example.lawly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4TT2VYaUsQ4HYUUgBbJFOlhzOOugD7lY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
