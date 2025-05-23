@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:lawly/api/data_sources/local/save_user_local_data_source.dart';
 import 'package:lawly/api/data_sources/local/token_local_data_source.dart';
 import 'package:lawly/api/data_sources/remote/user_service/auth_remote_data_source.dart';
 import 'package:lawly/config/app_config.dart';
@@ -14,6 +15,7 @@ class AuthInterceptor extends Interceptor {
   final Dio _dio;
   final AuthRemoteDataSource _authRemoteDataSource;
   final TokenLocalDataSource _tokenLocalDataSource;
+  final SaveUserLocalDataSource _saveUserLocalDataSource;
   final AuthBloc _authBloc;
   final SubBloc _subBloc;
   final AppRouter _appRouter;
@@ -26,12 +28,14 @@ class AuthInterceptor extends Interceptor {
     required Dio dio,
     required AuthRemoteDataSource authRemoteDataSource,
     required TokenLocalDataSource tokenLocalDataSource,
+    required SaveUserLocalDataSource saveUserLocalDataSource,
     required AuthBloc authBloc,
     required SubBloc subBloc,
     required AppRouter appRouter,
   })  : _dio = dio,
         _authRemoteDataSource = authRemoteDataSource,
         _tokenLocalDataSource = tokenLocalDataSource,
+        _saveUserLocalDataSource = saveUserLocalDataSource,
         _authBloc = authBloc,
         _subBloc = subBloc,
         _appRouter = appRouter;
@@ -137,6 +141,8 @@ class AuthInterceptor extends Interceptor {
     _authBloc.add(AuthEvent.loggedOut());
 
     _subBloc.add(SubEvent.removeSub());
+
+    await _saveUserLocalDataSource.clearUserData();
 
     _appRouter.push(const ProfileRouter());
     log('Logout');

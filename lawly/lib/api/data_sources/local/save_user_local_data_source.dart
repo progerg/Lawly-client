@@ -105,4 +105,10 @@ class SaveUserLocalDataSource {
   Future<String?> getUserAvatarPath() async {
     return _prefs.getString(userAvatarPathKey);
   }
+
+  Future<void> clearUserData() async {
+    await _prefs.remove(personalDocumentsKey);
+    await _prefs.remove(userAvatarPathKey);
+    await _prefs.remove(localTemplatesKey);
+  }
 }

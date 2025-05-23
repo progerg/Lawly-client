@@ -54,6 +54,7 @@ ProfileScreenWidgetModel defaultProfileScreenWidgetModelFactory(
     authBloc: appScope.authBloc,
     subBloc: appScope.subBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
+    saveUserLocalDataSource: appScope.saveUserLocalDataSource,
     authService: appScope.authService,
     userInfoService: appScope.userInfoService,
     saveUserService: appScope.saveUserService,
@@ -222,6 +223,8 @@ class ProfileScreenWidgetModel
       model.authBloc.add(AuthEvent.loggedOut());
 
       model.subBloc.add(SubEvent.removeSub());
+
+      await model.saveUserLocalDataSource.clearUserData();
 
       appRouter.push(const ProfileRouter());
     } on DioException catch (e) {

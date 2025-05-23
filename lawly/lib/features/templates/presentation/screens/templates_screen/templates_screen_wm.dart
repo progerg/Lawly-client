@@ -56,6 +56,7 @@ TemplatesScreenWidgetModel defaultTemplatesScreenWidgetModelFactory(
     authBloc: appScope.authBloc,
     subBloc: appScope.subBloc,
     tokenLocalDataSource: appScope.tokenLocalDataSource,
+    saveUserLocalDataSource: appScope.saveUserLocalDataSource,
     saveUserService: appScope.saveUserService,
     templateService: appScope.templateService,
     userInfoService: appScope.userInfoService,
@@ -296,7 +297,11 @@ class TemplatesScreenWidgetModel
         );
       } else {
         model.authBloc.add(AuthEvent.loggedOut());
+
         model.subBloc.add(SubEvent.removeSub());
+
+        await model.tokenLocalDataSource.clearTokens();
+
         _canCreateCustomTemplates.content(false);
       }
     } on Exception catch (e) {

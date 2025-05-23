@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.3.1
   # appmetrica_plugin: ^3.2.0
   appmetrica_plugin: 3.1.0
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +65,7 @@ flutter:
     - assets/images/
     - assets/images/welcome/
     - assets/icons/
+    - assets/icons/logo/
     - assets/icons/common/
     - assets/icons/bottom_nav_screen_icons/
 
@@ -95,3 +97,11 @@ flutter_native_splash:
     # Показываем белый экран на системном сплеше android 12+ 
     image: assets/images/logo_2.png
     color: "#F2EDE7"
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path_android: "assets/icons/logo/logo.png"
+  image_path_ios: "assets/icons/logo/logo.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
